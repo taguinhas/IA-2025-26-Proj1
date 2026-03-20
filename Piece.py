@@ -1,0 +1,54 @@
+from enum import Enum
+from Board import Board
+
+class Shape(Enum):
+    SQUARE = 1
+    TRIANGLE = 2
+    CIRCLE = 3
+
+
+class Size(Enum):
+    SMALL = 1
+    BIG = 2
+
+class Owner(Enum):
+    WHITE = 0
+    BLACK = 1
+class Piece:
+    orthogonal_dirs = [(1,0), (-1,0), (0,1), (0,-1)]
+    diagonal_dirs = [(1,1), (1,-1), (-1,1), (-1,-1)]
+    all_dirs = orthogonal_dirs + diagonal_dirs
+
+    shape_directions = {
+        Shape.SQUARE: orthogonal_dirs,
+        Shape.TRIANGLE: diagonal_dirs,
+        Shape.CIRCLE: all_dirs,
+    }
+
+    def __init__(self, owner:Owner, shape:Shape, size:Size):
+        self.owner = owner
+        self.shape = shape
+        self.size = size
+
+    def get_moves(self, board:Board, x:int, y:int):
+        directions = self.shape_directions[self.shape]
+
+        moves = []
+
+        max_steps = 1 if self.size == Size.SMALL else board.size
+        
+        for dx, dy in directions:
+            for step in range(1, max_steps + 1):
+
+                fx = x + dx * step
+                fy = y + dy * step
+
+                if not board.in_bounds(fx, fy):
+                    break
+
+                moves.append((fx, fy))
+
+                if board.is_occupied(fx, fy):
+                    break
+
+        return moves
