@@ -1,5 +1,5 @@
 from enum import Enum
-from Board import Board
+
 
 class Shape(Enum):
     SQUARE = 1
@@ -30,7 +30,7 @@ class Piece:
         self.shape = shape
         self.size = size
 
-    def get_moves(self, board:Board, x:int, y:int):
+    def get_moves(self, board, x:int, y:int):
         directions = self.shape_directions[self.shape]
 
         moves = []

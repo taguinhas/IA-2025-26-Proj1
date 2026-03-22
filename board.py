@@ -2,7 +2,7 @@ from Piece import Piece
 class Board:
     def __init__(self, size:int):
         """
-        Create an empty Board, must place pieces with Board.place_piece
+        Create an empty Board, must place pieces with Board.place_piece()
         """
         self.size = size
         self.board = [[None for _ in range(size)] for _ in range(size)]
@@ -26,7 +26,7 @@ class Board:
         """Clear position at position"""
         self.board[y][x] = None
     
-    def get_piece(self, x:int, y:int):
+    def get_piece(self, x:int, y:int) -> Piece:
         """Get Piece at position"""
         if(self.in_bounds(x, y)):
             return self.board[y][x]
