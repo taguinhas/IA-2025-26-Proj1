@@ -1,5 +1,5 @@
-from Board import Board
-from Piece import Piece, Owner, Size, Shape
+from board import Board
+from piece import Piece, Owner, Size, Shape
 
 class Game:
     def __init__(self):
