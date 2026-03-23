@@ -1,6 +1,6 @@
-BS
-.
+BS BT BC BC BT BS
+bs bt bc bc bt bs
 .
 . 
-WC . . WT
-. . . bc
+ws wt wc wc wt ws
+WS WT WC WC WR WS

@@ -74,9 +74,12 @@ class Game:
             for x, token in enumerate(tokens):
                 if token == ".":
                     continue
+                try:
+                    owner = owner_map[token[0].upper()]
+                    shape = shape_map[token[1].upper()]
+                except KeyError:
+                    raise Exception("Unrecognized token:" + token)
                 
-                owner = owner_map[token[0].upper()]
-                shape = shape_map[token[1].upper()]
                 size = Size.BIG if token.isupper() else Size.SMALL
     
                 piece = Piece(owner, shape, size)
