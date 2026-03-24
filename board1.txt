@@ -3,4 +3,4 @@ bs bt bc bc bt bs
 .
 . 
 ws wt wc wc wt ws
-WS WT WC WC WR WS
+WS WT WC WC WT WS
