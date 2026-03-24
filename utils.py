@@ -5,7 +5,7 @@ def get_attack_map(board:Board, attacker: Player):
     """
     return a set with all the squares being attacked by attacker. usefull for goal check and heuristics
     """
-    attacked = [[False for _ in range(board.size)] for _ in range(board.size)]
+    attacked = [[0 for _ in range(board.size)] for _ in range(board.size)]
 
     for y in range(board.size):
         for x in range(board.size):
@@ -17,6 +17,6 @@ def get_attack_map(board:Board, attacker: Player):
             moves = piece.get_moves(board, x, y)
 
             for fx, fy in moves:
-                attacked[fy][fx] = True
+                attacked[fy][fx] += 1
 
     return attacked

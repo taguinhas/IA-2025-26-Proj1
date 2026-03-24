@@ -93,13 +93,13 @@ class Game:
             #white goal
             piece = self.board.get_piece(x, 0)
             if piece and piece.owner == Player.WHITE:
-                if not black_attacks[0][x]:
+                if black_attacks[0][x] == 0:
                     return Player.WHITE
 
             #black goal
             piece = self.board.get_piece(x, self.board.size - 1)
             if piece and piece.owner == Player.BLACK:
-                if not white_attacks[self.board.size - 1][x]:
+                if white_attacks[self.board.size - 1][x] == 0:
                     return Player.BLACK
 
         #elimination win

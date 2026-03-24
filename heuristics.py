@@ -39,6 +39,16 @@ posTables = {
     Shape.CIRCLE: []
 }
 """
+
+attackTable = [
+    [8, 8, 8, 8, 8, 8 ],
+    [3, 4, 5, 5, 4, 3 ],
+    [2, 3, 4, 4, 3, 2 ],
+    [1, 2, 3, 3, 2, 1 ],
+    [0, 0, 0, 0, 0, 0 ],
+    [0, 0, 0, 0, 0, 0 ],
+]
+
 """
 Weights need testing and tweaking
 im really unsure about the pos values. im afraid it'll sacrifice pieces just to get them further on the board
@@ -118,7 +128,7 @@ def safety_eval_board(board:Board, white_attacks, black_attacks) ->int:
                 ownerFactor = -1
                 enemy_attacks = white_attacks
 
-            if enemy_attacks[y][x]:
+            if enemy_attacks[y][x] > 0:
                 penalty = shapeFactors[piece.shape]
 
                 if piece.size == Size.BIG:
@@ -143,3 +153,10 @@ def activity_eval_board(board:Board) ->int:
             activityScore += len(moves) * ownerFactor
     return activityScore
 
+def attack_eval_board(white_attacks, black_attacks, weight_table):
+    attackScore = 0
+    for y in range(len(weight_table)):
+        for x in range(len(weight_table[0])):
+            attackScore += (white_attacks[y][x] - black_attacks[y][x]) * weight_table[y][x]
+    
+    return attackScore
