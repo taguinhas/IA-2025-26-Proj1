@@ -1,7 +1,7 @@
 from game.board import Board
-from game.piece import Owner
+from game.piece import Player
 
-def get_attack_map(board:Board, attacker: Owner):
+def get_attack_map(board:Board, attacker: Player):
     """
     return a set with all the squares being attacked by attacker. usefull for goal check and heuristics
     """

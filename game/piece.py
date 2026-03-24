@@ -11,7 +11,7 @@ class Size(Enum):
     SMALL = 1
     BIG = 2
 
-class Owner(Enum):
+class Player(Enum):
     WHITE = 0
     BLACK = 1
 class Piece:
@@ -25,7 +25,7 @@ class Piece:
         Shape.CIRCLE: all_dirs,
     }
 
-    def __init__(self, owner:Owner, shape:Shape, size:Size):
+    def __init__(self, owner:Player, shape:Shape, size:Size):
         self.owner = owner
         self.shape = shape
         self.size = size

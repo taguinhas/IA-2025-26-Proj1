@@ -1,6 +1,6 @@
 from game.game import Game
 from game.board import Board
-from game.piece import Shape, Size, Owner, Piece
+from game.piece import Shape, Size, Player, Piece
 from utils import get_attack_map
 
 shapeFactors = {
@@ -21,6 +21,7 @@ posTableWithCenter = [
 chess gives bigger values to pieces on the center because of board control,
 however a piece on the edge is less likely to be captured so maybe for alapo its not better?
 needs testing
+maybe only use pos table for small pieces? since  big pieces can just skip the entire board?
 """
 posTable = [
     [12,12,12,12,12,12],
@@ -38,21 +39,21 @@ posTables = {
     Shape.CIRCLE: []
 }
 """
-
-# Weights need testing and tweaking
+"""
+Weights need testing and tweaking
+im really unsure about the pos values. im afraid it'll sacrifice pieces just to get them further on the board
+"""
 heuristicWeights = {
     "Material": 1,
     "Position": 1,
     "Activity": 1,
     "Safety": 1,
-    "Goal": 1,
-
 }
 
 
 def evaluate_board(board: Board):
-    white_attacks = get_attack_map(board, Owner.WHITE)
-    black_attacks = get_attack_map(board, Owner.BLACK)
+    white_attacks = get_attack_map(board, Player.WHITE)
+    black_attacks = get_attack_map(board, Player.BLACK)
 
     material_score = material_eval_board(board)
 
@@ -62,14 +63,12 @@ def evaluate_board(board: Board):
 
     safe_score = safety_eval_board(board, white_attacks, black_attacks)
 
-    goal_score = goal_eval_board(board, white_attacks, black_attacks)
 
     total_score = (
          heuristicWeights["Material"] * material_score +
          heuristicWeights["Position"] * pos_score +
          heuristicWeights["Activity"] * activity_score +
-         heuristicWeights["Safety"] * safe_score +
-         heuristicWeights["Goal"] * goal_score
+         heuristicWeights["Safety"] * safe_score
     )
 
     return total_score
@@ -80,7 +79,7 @@ def material_eval_board(board:Board) ->int:
         for piece in line:
             if piece is None:
                 continue
-            ownerFactor = 1 if piece.owner == Owner.WHITE else -1
+            ownerFactor = 1 if piece.owner == Player.WHITE else -1
 
             pieceScore = shapeFactors[piece.shape]
             if piece.size == Size.BIG:
@@ -88,32 +87,6 @@ def material_eval_board(board:Board) ->int:
                 
             materialScore += pieceScore * ownerFactor
     return materialScore
-
-def position_eval_board(board:Board) ->int:
-    posScore = 0
-    for y in range(board.size):
-        for x in range(board.size):
-            piece = board.get_piece(x,y)
-            if piece is None:
-                continue
-
-            ownerFactor = 1 if piece.owner == Owner.WHITE else -1
-
-            if piece.owner == Owner.WHITE:
-                dist = y
-            else:
-                dist = (board.size - 1) - y
-            #chatGPT gave the idea of making it quadratic to make it worth more needs testing
-            #posScore += (board.size - dist) ** 2 * ownerFactor
-            #posScore += (board.size - dist) * ownerFactor
-            posScore += (board.size - dist) * 2 * ownerFactor
-
-            #wont work if we change board size(we WON'T)
-            center_dist = abs(x - 2.5) + abs(y - 2.5)
-
-            pos_score += (3 - center_dist) * 0.5 * ownerFactor
-            
-    return posScore
 
 def position_with_table_eval_board(board:Board, posTable) ->int:       
     posScore = 0
@@ -123,8 +96,8 @@ def position_with_table_eval_board(board:Board, posTable) ->int:
             if piece is None:
                 continue
 
-            ownerFactor = 1 if piece.owner == Owner.WHITE else -1
-            temp = posTable[y][x] if piece.owner == Owner.WHITE else posTable[5 - y][x]
+            ownerFactor = 1 if piece.owner == Player.WHITE else -1
+            temp = posTable[y][x] if piece.owner == Player.WHITE else posTable[5 - y][x]
             posScore += temp * ownerFactor  
     return posScore
 
@@ -138,7 +111,7 @@ def safety_eval_board(board:Board, white_attacks, black_attacks) ->int:
             if piece is None:
                 continue
 
-            if (piece.owner == Owner.WHITE):
+            if (piece.owner == Player.WHITE):
                 ownerFactor = 1
                 enemy_attacks = black_attacks
             else:
@@ -163,26 +136,10 @@ def activity_eval_board(board:Board) ->int:
             if piece is None:
                 continue
 
-            ownerFactor = 1 if piece.owner == Owner.WHITE else -1
+            ownerFactor = 1 if piece.owner == Player.WHITE else -1
 
             moves = piece.get_moves(board, x, y)
 
             activityScore += len(moves) * ownerFactor
     return activityScore
-
-def goal_eval_board(board: Board, white_attacks, black_attacks):
-    goalScore = 0
-    for y in range(board.size):
-        for x in range(board.size):
-            piece = board.get_piece(x, y)
-            if piece is None:
-                continue
-
-            if piece.owner == Owner.WHITE and y == board.size - 1:
-                if not black_attacks[y][x]:
-                    goalScore += 9000
-            elif piece.owner == Owner.BLACK and y == 0:
-                if not white_attacks[y][x]:
-                    goalScore -= 9000
-    return goalScore
 
