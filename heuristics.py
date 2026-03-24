@@ -17,6 +17,15 @@ posTableWithCenter = [
     [1, 2, 3, 3, 2, 1 ],
     [0, 0, 1, 1, 0, 0 ],
 ]
+
+posTableWithCenter2 = [
+    [10,16,16,16,16,10],
+    [6, 7, 8, 8, 7, 6 ],
+    [3, 4, 5, 5, 4, 3 ],
+    [2, 3, 4, 4, 3, 2 ],
+    [1, 2, 3, 3, 2, 1 ],
+    [0, 0, 1, 1, 0, 0 ],
+]
 """
 chess gives bigger values to pieces on the center because of board control,
 however a piece on the edge is less likely to be captured so maybe for alapo its not better?
@@ -40,7 +49,7 @@ posTables = {
 }
 """
 
-attackTable = [
+controlTable = [
     [8, 8, 8, 8, 8, 8 ],
     [3, 4, 5, 5, 4, 3 ],
     [2, 3, 4, 4, 3, 2 ],
@@ -58,6 +67,7 @@ heuristicWeights = {
     "Position": 1,
     "Activity": 1,
     "Safety": 1,
+    "Control": 1,
 }
 
 
@@ -73,12 +83,14 @@ def evaluate_board(board: Board):
 
     safe_score = safety_eval_board(board, white_attacks, black_attacks)
 
+    controlScore = control_eval_board(white_attacks, black_attacks, controlTable)
 
     total_score = (
          heuristicWeights["Material"] * material_score +
          heuristicWeights["Position"] * pos_score +
          heuristicWeights["Activity"] * activity_score +
-         heuristicWeights["Safety"] * safe_score
+         heuristicWeights["Safety"] * safe_score +
+         heuristicWeights["Control"] * controlScore
     )
 
     return total_score
@@ -98,7 +110,7 @@ def material_eval_board(board:Board) ->int:
             materialScore += pieceScore * ownerFactor
     return materialScore
 
-def position_with_table_eval_board(board:Board, posTable) ->int:       
+def position_with_table_eval_board(board:Board, posTable) ->int:
     posScore = 0
     for y in range(board.size):
         for x in range(board.size):
@@ -111,30 +123,51 @@ def position_with_table_eval_board(board:Board, posTable) ->int:
             posScore += temp * ownerFactor  
     return posScore
 
-def safety_eval_board(board:Board, white_attacks, black_attacks) ->int:
-    """requires attack maps(see utils.get_attack_map)"""
+def position_with_columns_eval_board(board:Board, posTable) ->int:
+    """TODO:take columns into account"""  
+    posScore = 0
+    for y in range(board.size):
+        for x in range(board.size):
+            piece = board.get_piece(x,y)
+            if piece is None:
+                continue
+            
+            ownerFactor = 1 if piece.owner == Player.WHITE else -1
+            temp = posTable[y][x] if piece.owner == Player.WHITE else posTable[5 - y][x]
+
+            posScore += temp * ownerFactor  
+    return posScore
+
+def safety_eval_board(board, white_attacks, black_attacks):
+    """requires attack maps(see utils.get_attack_map)
+    """
     safeScore = 0
+
     for y in range(board.size):
         for x in range(board.size):
             piece = board.get_piece(x, y)
-
             if piece is None:
                 continue
 
-            if (piece.owner == Player.WHITE):
+            if piece.owner == Player.WHITE:
+                danger = black_attacks[y][x] - white_attacks[y][x]
                 ownerFactor = 1
-                enemy_attacks = black_attacks
             else:
+                danger = white_attacks[y][x] - black_attacks[y][x]
                 ownerFactor = -1
-                enemy_attacks = white_attacks
 
-            if enemy_attacks[y][x] > 0:
-                penalty = shapeFactors[piece.shape]
+            # only care if actually in danger
+            if danger <= 0:
+                safeScore += 0.2 * (-danger) * ownerFactor
+
+            else:
+                penalty = danger * shapeFactors[piece.shape]
 
                 if piece.size == Size.BIG:
                     penalty *= 3
 
                 safeScore -= penalty * ownerFactor
+
     return safeScore
 
 def activity_eval_board(board:Board) ->int:
@@ -153,10 +186,10 @@ def activity_eval_board(board:Board) ->int:
             activityScore += len(moves) * ownerFactor
     return activityScore
 
-def attack_eval_board(white_attacks, black_attacks, weight_table):
-    attackScore = 0
+def control_eval_board(white_attacks, black_attacks, weight_table):
+    controlScore = 0
     for y in range(len(weight_table)):
         for x in range(len(weight_table[0])):
-            attackScore += (white_attacks[y][x] - black_attacks[y][x]) * weight_table[y][x]
-    
-    return attackScore
+            controlScore += white_attacks[y][x] * weight_table[y][x]
+            controlScore -= black_attacks[y][x] * weight_table[len(weight_table)-y-1][x]
+    return controlScore
