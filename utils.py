@@ -15,7 +15,6 @@ def get_attack_map(board:Board, attacker: Player):
                 continue
 
             moves = piece.get_moves(board, x, y)
-
             for fx, fy in moves:
                 attacked[fy][fx] += 1
 

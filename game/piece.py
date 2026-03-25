@@ -45,10 +45,12 @@ class Piece:
 
                 if not board.in_bounds(fx, fy):
                     break
+                
+                piece = board.get_piece(fx, fy)
 
-                moves.append((fx, fy))
-
-                if board.is_occupied(fx, fy):
+                if piece is not None:
+                    if piece.owner != self.owner:
+                        moves.append((fx, fy))
                     break
-
+                moves.append((fx, fy))
         return moves

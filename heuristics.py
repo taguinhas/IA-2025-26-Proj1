@@ -79,6 +79,7 @@ def evaluate_board(board: Board):
 
     pos_score = position_with_table_eval_board(board, posTableWithCenter)
 
+    #very similar logic to control, might not be needed
     activity_score = activity_eval_board(board)
 
     safe_score = safety_eval_board(board, white_attacks, black_attacks)
