@@ -49,7 +49,7 @@ posTables = {
 }
 """
 
-controlTable = [
+agressivecontrolTable = [
     [8, 8, 8, 8, 8, 8 ],
     [3, 4, 5, 5, 4, 3 ],
     [2, 3, 4, 4, 3, 2 ],
@@ -58,6 +58,14 @@ controlTable = [
     [0, 0, 0, 0, 0, 0 ],
 ]
 
+defensivecontrolTable = [
+    [8, 8, 8, 8, 8, 8 ],
+    [3, 4, 5, 5, 4, 3 ],
+    [1, 2, 3, 3, 2, 1 ],
+    [1, 2, 3, 3, 2, 1 ],
+    [3, 4, 5, 5, 4, 3 ],
+    [8, 8, 8, 8, 8, 8 ],
+]
 """
 Weights need testing and tweaking
 im really unsure about the pos values. im afraid it'll sacrifice pieces just to get them further on the board
@@ -84,7 +92,7 @@ def evaluate_board(board: Board):
 
     safe_score = safety_eval_board(board, white_attacks, black_attacks)
 
-    controlScore = control_eval_board(white_attacks, black_attacks, controlTable)
+    controlScore = control_eval_board(white_attacks, black_attacks, defensivecontrolTable)
 
     total_score = (
          heuristicWeights["Material"] * material_score +
