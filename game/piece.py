@@ -1,6 +1,5 @@
 from enum import Enum
 
-
 class Shape(Enum):
     SQUARE = 1
     TRIANGLE = 2
@@ -14,6 +13,7 @@ class Size(Enum):
 class Player(Enum):
     WHITE = 0
     BLACK = 1
+
 class Piece:
     orthogonal_dirs = [(1,0), (-1,0), (0,1), (0,-1)]
     diagonal_dirs = [(1,1), (1,-1), (-1,1), (-1,-1)]

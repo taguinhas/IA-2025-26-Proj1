@@ -1,4 +1,9 @@
 from game.piece import Piece
+
+class InvalidMoveError(Exception):
+    """Raised when a move violates game rules."""
+    pass
+
 class Board:
     def __init__(self, size:int):
         """
@@ -18,9 +23,7 @@ class Board:
     
     def place_piece(self, piece:Piece, x:int, y:int):
         """Place a piece on the Board, if position is already occupied old piece gets overwritten and returned"""
-        old_piece = self.board[y][x]
         self.board[y][x] = piece
-        return old_piece
 
     def remove_piece(self, x:int, y:int):
         """Clear position at position"""
@@ -35,15 +38,16 @@ class Board:
     def move_piece(self, ix:int, iy:int, fx:int, fy:int):
         """Moves piece from (ix, iy) to (fx, fy). Returns captured piece"""
         if not self.in_bounds(fx, fy):
-            raise ValueError(f"Board.move_piece: Final position ({fx}, {fy}) out of Bounds for Board of size {self.size}")
+            raise InvalidMoveError(f"Board.move_piece: Final position ({fx}, {fy}) out of Bounds for Board of size {self.size}")
         
         moving = self.get_piece(ix, iy)
         if moving is None:
-            raise ValueError(f"Board.move_piece: No piece at initial position ({ix}, {iy})")
+            raise InvalidMoveError(f"Board.move_piece: No piece at initial position ({ix}, {iy})")
 
-        captured = self.place_piece(moving, fx, fy)
+        captured = self.get_piece(fx, fy)
         if captured is not None and captured.owner == moving.owner:
-            raise ValueError(f"Board.move_piece: Cannot capture your own piece. Pos:({fx}, {fy})")
+            raise InvalidMoveError(f"Board.move_piece: Cannot capture your own piece. Pos:({fx}, {fy})")
+        self.place_piece(moving, fx, fy)
         self.remove_piece(ix,iy)
 
         return captured

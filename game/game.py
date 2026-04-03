@@ -8,6 +8,7 @@ class Game:
         """
         self.board = Board(6)
         self.populate_board()
+        self.cur_player = Player.WHITE
 
     def populate_board(self):
         shapes = [Shape.SQUARE, Shape.TRIANGLE, Shape.CIRCLE, Shape.CIRCLE, Shape.TRIANGLE, Shape.SQUARE]
