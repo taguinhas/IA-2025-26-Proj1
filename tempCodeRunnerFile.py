@@ -2,7 +2,7 @@ from game.game import Game
 from game.board import Board, InvalidMoveError
 from game.piece import Piece, Player, Size, Shape
 
-from players.player import genericPlayer
+from players.genericPlayer import genericPlayer
 from players.humanPlayer import HumanPlayer
 from players.minimaxPlayer import MinimaxPlayer
 
@@ -52,9 +52,7 @@ while(True):
 
     try:
 
-        ix, iy, fx, fy = player.get_player_move(game.board)
-
-        captured = game.board.move_piece(ix, iy, fx, fy)
+        captured = game.board.move_piece(player.get_player_move(game.board))
         if captured is not None:
             print(f"Captured: {player_names[captured.owner]} {size_names[captured.size]} {shape_names[captured.shape]}!")
 

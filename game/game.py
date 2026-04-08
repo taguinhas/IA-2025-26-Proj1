@@ -1,5 +1,5 @@
 from game.board import Board
-from game.piece import Piece, Player, Size, Shape
+from game.piece import Piece, Player, Size, Shape, Move
 class Game:
     def __init__(self):
         """

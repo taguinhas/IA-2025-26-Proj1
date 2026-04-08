@@ -1,9 +1,13 @@
 from utils import user_to_board_coords, player_names, size_names, shape_names
 from game.game import Game
 from game.board import Board, InvalidMoveError
-from players.player import genericPlayer
+from game.piece import Move
+from players.genericPlayer import genericPlayer
 
 class HumanPlayer(genericPlayer):
+    def __init__(self, name):
+        super().__init__(name)
+
     def get_player_move(self, game:Game):
         board = game.board
         print("Which piece to move?(bottom left is (0,0))")
@@ -24,8 +28,8 @@ class HumanPlayer(genericPlayer):
             raise InvalidMoveError("Piece has no available moves")
 
         print("Available moves:")
-        for x, y in available_moves:
-            user_x, user_y = user_to_board_coords(board, x, y)
+        for move in available_moves:
+            user_x, user_y = user_to_board_coords(board, move.fx, move.fy)
             print(f"({user_x}, {user_y})")
         
         print("Move to where?")
@@ -34,7 +38,7 @@ class HumanPlayer(genericPlayer):
 
         board_fx, board_fy = user_to_board_coords(board, user_fx, user_fy)
 
-        if (board_fx, board_fy) not in available_moves:
+        if Move(board_ix, board_iy, board_fx, board_fy) not in available_moves:
             raise InvalidMoveError("Invalid destination for that piece")
         
-        return board_ix, board_iy, board_fx, board_fy
+        return Move(board_ix, board_iy, board_fx, board_fy)

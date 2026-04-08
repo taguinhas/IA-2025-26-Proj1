@@ -1,6 +1,7 @@
 from game.game import Game
 from game.board import Board, InvalidMoveError
 from game.piece import Piece, Player, Size, Shape
+from heuristics import evaluate_board
 
 from players.humanPlayer import HumanPlayer
 from players.minimaxPlayer import MinimaxPlayer
@@ -16,8 +17,8 @@ modes = {
 }
 game_mode = -1
 
-white_player = HumanPlayer()
-black_player = HumanPlayer()
+white_player = HumanPlayer("Lowly human")
+black_player = HumanPlayer("Lowlier human")
 
 while(game_mode == -1):
     print("Choose game type:")
@@ -27,20 +28,19 @@ while(game_mode == -1):
     choice = int(input())
     match choice:
         case 0:
-            white_player = HumanPlayer()
-            black_player = HumanPlayer()
+            white_player = HumanPlayer("Lowly human")
+            black_player = HumanPlayer("Lowlier human")
             game_mode = 0
 
         case 1:
-            white_player = HumanPlayer()
-            black_player = MinimaxPlayer()
+            white_player = HumanPlayer("Lowly human")
+            black_player = MinimaxPlayer("HumanDestroyer9000", evaluate_board, 5)
             game_mode = 1
 
         case 2:
-            white_player = MinimaxPlayer()
-            black_player = MinimaxPlayer()
+            white_player = MinimaxPlayer("HumanDestroyer9000", evaluate_board, 5)
+            black_player = MinimaxPlayer("HumanDecimator9000", evaluate_board, 5)
             game_mode = 2 
-
 
 while(True):
     game.print_board()
@@ -50,10 +50,9 @@ while(True):
     print(f"{player_names[game.cur_player]}'s turn")
 
     try:
-
-        ix, iy, fx, fy = player.get_player_move(game)
-
-        captured = game.board.move_piece(ix, iy, fx, fy)
+        move = player.get_player_move(game)
+        print(move)
+        captured = game.board.move_piece(move)
         if captured is not None:
             print(f"Captured: {player_names[captured.owner]} {size_names[captured.size]} {shape_names[captured.shape]}!")
 

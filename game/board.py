@@ -1,4 +1,5 @@
-from game.piece import Piece, Player
+from game.piece import Piece, Player, Move
+
 class InvalidMoveError(Exception):
     """Raised when a move violates game rules."""
     pass
@@ -34,20 +35,20 @@ class Board:
             return self.board[y][x]
         return None
     
-    def move_piece(self, ix:int, iy:int, fx:int, fy:int):
-        """Moves piece from (ix, iy) to (fx, fy). Returns captured piece"""
-        if not self.in_bounds(fx, fy):
-            raise InvalidMoveError(f"Board.move_piece: Final position ({fx}, {fy}) out of Bounds for Board of size {self.size}")
+    def move_piece(self, move:Move):
+        """Moves piece. requires "Move" Object. Returns captured piece"""
+        if not self.in_bounds(move.fx, move.fy):
+            raise InvalidMoveError(f"Board.move_piece: Final position ({move.fx}, {move.fy}) out of Bounds for Board of size {self.size}")
         
-        moving = self.get_piece(ix, iy)
+        moving = self.get_piece(move.ix, move.iy)
         if moving is None:
-            raise InvalidMoveError(f"Board.move_piece: No piece at initial position ({ix}, {iy})")
+            raise InvalidMoveError(f"Board.move_piece: No piece at initial position ({move.ix}, {move.iy})")
 
-        captured = self.get_piece(fx, fy)
+        captured = self.get_piece(move.fx, move.fy)
         if captured is not None and captured.owner == moving.owner:
-            raise InvalidMoveError(f"Board.move_piece: Cannot capture your own piece. Pos:({fx}, {fy})")
-        self.place_piece(moving, fx, fy)
-        self.remove_piece(ix,iy)
+            raise InvalidMoveError(f"Board.move_piece: Cannot capture your own piece. Pos:({move.fx}, {move.fy})")
+        self.place_piece(moving, move.fx, move.fy)
+        self.remove_piece(move.ix,move.iy)
 
         return captured
         
@@ -65,11 +66,24 @@ class Board:
                     continue
 
                 moves = piece.get_moves(self, x, y)
-                for fx, fy in moves:
-                    attacked[fy][fx] += 1
+                for move in moves:
+                    attacked[move.fy][move.fx] += 1
 
         return attacked
 
+    def available_moves(self, player:Player) -> list:
+        moves = list()
+        for y in range(self.size):
+            for x in range(self.size):
+                piece = self.get_piece(x, y)
+
+                if piece is None or piece.owner != player:
+                    continue
+
+                moves += piece.get_moves(self, x, y)
+        return moves
+
+        
     def check_winner(self):
         white_attacks = self.get_attack_map(Player.WHITE)
         black_attacks = self.get_attack_map(Player.BLACK)
