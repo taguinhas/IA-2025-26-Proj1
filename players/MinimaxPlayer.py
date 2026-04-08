@@ -73,7 +73,7 @@ class MinimaxPlayer(genericPlayer):
         # your code here
         
         min_eval = float("inf")
-        for move in board.available_moves():
+        for move in board.available_moves(original_player):
             new_state = self._simulate_move(board, move)
             new_value, _ = self.min_value(new_state, depth - 1, alpha, beta, original_player)
             if(new_value < min_eval):

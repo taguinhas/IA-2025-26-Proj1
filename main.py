@@ -20,6 +20,7 @@ game_mode = -1
 white_player = HumanPlayer("Lowly human")
 black_player = HumanPlayer("Lowlier human")
 
+depth = 1
 while(game_mode == -1):
     print("Choose game type:")
     for key, value in modes.items():
@@ -34,12 +35,12 @@ while(game_mode == -1):
 
         case 1:
             white_player = HumanPlayer("Lowly human")
-            black_player = MinimaxPlayer("HumanDestroyer9000", evaluate_board, 5)
+            black_player = MinimaxPlayer("HumanDestroyer9000", evaluate_board, depth)
             game_mode = 1
 
         case 2:
-            white_player = MinimaxPlayer("HumanDestroyer9000", evaluate_board, 5)
-            black_player = MinimaxPlayer("HumanDecimator9000", evaluate_board, 5)
+            white_player = MinimaxPlayer("HumanDestroyer9000", evaluate_board, depth)
+            black_player = MinimaxPlayer("HumanDecimator9000", evaluate_board, depth)
             game_mode = 2 
 
 while(True):
@@ -51,7 +52,6 @@ while(True):
 
     try:
         move = player.get_player_move(game)
-        print(move)
         captured = game.board.move_piece(move)
         if captured is not None:
             print(f"Captured: {player_names[captured.owner]} {size_names[captured.size]} {shape_names[captured.shape]}!")
