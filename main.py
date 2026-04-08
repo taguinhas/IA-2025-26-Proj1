@@ -2,7 +2,6 @@ from game.game import Game
 from game.board import Board, InvalidMoveError
 from game.piece import Piece, Player, Size, Shape
 
-from players.player import genericPlayer
 from players.humanPlayer import HumanPlayer
 from players.minimaxPlayer import MinimaxPlayer
 
@@ -66,7 +65,7 @@ while(True):
         continue
 
     game.cur_player = Player.BLACK if game.cur_player == Player.WHITE else Player.WHITE
-    winner = game.check_winner()
+    winner = game.board.check_winner()
     if (winner is not None):
         print(f"Game over {player_names[winner]} wins!")
         break

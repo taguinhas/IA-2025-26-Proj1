@@ -1,5 +1,4 @@
-from game.piece import Piece
-
+from game.piece import Piece, Player
 class InvalidMoveError(Exception):
     """Raised when a move violates game rules."""
     pass
@@ -11,7 +10,7 @@ class Board:
         """
         self.size = size
         self.board = [[None for _ in range(size)] for _ in range(size)]
-
+        self.game_over = False
 
     def in_bounds(self, x:int, y:int) -> bool:
         """Check if a position is within the bounds of the Board"""
@@ -52,3 +51,62 @@ class Board:
 
         return captured
         
+    def get_attack_map(self, attacker: Player):
+        """
+        return a set with all the squares being attacked by attacker. usefull for goal check and heuristics
+        """
+        attacked = [[0 for _ in range(self.size)] for _ in range(self.size)]
+
+        for y in range(self.size):
+            for x in range(self.size):
+                piece = self.get_piece(x, y)
+
+                if piece is None or piece.owner != attacker:
+                    continue
+
+                moves = piece.get_moves(self, x, y)
+                for fx, fy in moves:
+                    attacked[fy][fx] += 1
+
+        return attacked
+
+    def check_winner(self):
+        white_attacks = self.get_attack_map(Player.WHITE)
+        black_attacks = self.get_attack_map(Player.BLACK)
+
+        #home attack win
+        for x in range(self.size):
+            #white goal
+            piece = self.get_piece(x, 0)
+            if piece and piece.owner == Player.WHITE:
+                if black_attacks[0][x] == 0:
+                    self.game_over = True
+                    return Player.WHITE
+
+            #black goal
+            piece = self.get_piece(x, self.size - 1)
+            if piece and piece.owner == Player.BLACK:
+                if white_attacks[self.size - 1][x] == 0:
+                    self.game_over = True
+                    return Player.BLACK
+
+        #elimination win
+        has_white = False
+        has_black = False
+
+        for row in self.board:
+            for piece in row:
+                if piece:
+                    if piece.owner == Player.WHITE:
+                        has_white = True
+                    else:
+                        has_black = True
+
+        if not has_white:
+            self.game_over = True
+            return Player.BLACK
+        if not has_black:
+            self.game_over = True
+            return Player.WHITE
+
+        return None
