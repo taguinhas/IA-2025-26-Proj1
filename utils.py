@@ -1,5 +1,8 @@
 from game.board import Board
-from game.piece import Player
+from game.piece import Player, Shape, Size
+
+def user_to_board_coords(board:Board, x:int, y:int):
+    return (x, board.size - y - 1)
 
 def get_attack_map(board:Board, attacker: Player):
     """
@@ -19,3 +22,19 @@ def get_attack_map(board:Board, attacker: Player):
                 attacked[fy][fx] += 1
 
     return attacked
+
+player_names = {
+    Player.WHITE: "White",
+    Player.BLACK: "BLACK"
+}
+
+size_names = {
+    Size.SMALL: "Small",
+    Size.BIG: "Big"
+}
+
+shape_names = {
+    Shape.SQUARE: "Square",
+    Shape.TRIANGLE: "Triangle",
+    Shape.CIRCLE: "Circle"
+}
