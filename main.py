@@ -9,7 +9,7 @@ from players.minimaxPlayer import MinimaxPlayer
 from utils import player_names, size_names, shape_names
 
 game = Game()
-
+#game.load_board_from_file("boards/test.txt")
 modes = {
     0: "Human vs Human",
     1: "Human vs MiniMax",
@@ -20,7 +20,7 @@ game_mode = -1
 white_player = HumanPlayer("Lowly human")
 black_player = HumanPlayer("Lowlier human")
 
-depth = 1
+depth = 4
 while(game_mode == -1):
     print("Choose game type:")
     for key, value in modes.items():
@@ -34,8 +34,14 @@ while(game_mode == -1):
             game_mode = 0
 
         case 1:
-            white_player = HumanPlayer("Lowly human")
-            black_player = MinimaxPlayer("HumanDestroyer9000", evaluate_board, depth)
+            print("White(0) or black (1)?")
+            color = int(input())
+            if color == 0:
+                white_player = HumanPlayer("Lowly human")
+                black_player = MinimaxPlayer("HumanDestroyer9000", evaluate_board, depth)
+            else:
+                black_player = HumanPlayer("Lowly human")
+                white_player = MinimaxPlayer("HumanDestroyer9000", evaluate_board, depth)
             game_mode = 1
 
         case 2:

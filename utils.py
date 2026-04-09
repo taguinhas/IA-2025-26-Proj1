@@ -6,7 +6,7 @@ def user_to_board_coords(board:Board, x:int, y:int):
 
 player_names = {
     Player.WHITE: "White",
-    Player.BLACK: "BLACK"
+    Player.BLACK: "Black"
 }
 
 size_names = {

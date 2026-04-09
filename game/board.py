@@ -12,6 +12,10 @@ class Board:
         self.size = size
         self.board = [[None for _ in range(size)] for _ in range(size)]
         self.game_over = False
+        self._white_attack_map = None
+        self._black_attack_map = None
+        self._w_atk_map_updated = False
+        self._b_atk_map_updated = False
 
     def in_bounds(self, x:int, y:int) -> bool:
         """Check if a position is within the bounds of the Board"""
@@ -25,9 +29,15 @@ class Board:
         """Place a piece on the Board, if position is already occupied old piece gets overwritten and returned"""
         self.board[y][x] = piece
 
+        self._w_atk_map_updated = False
+        self._b_atk_map_updated = False
+
+
     def remove_piece(self, x:int, y:int):
         """Clear position at position"""
         self.board[y][x] = None
+        self._w_atk_map_updated = False
+        self._b_atk_map_updated = False
     
     def get_piece(self, x:int, y:int) -> Piece:
         """Get Piece at position"""
@@ -52,7 +62,7 @@ class Board:
 
         return captured
         
-    def get_attack_map(self, attacker: Player):
+    def _get_attack_map(self, attacker: Player):
         """
         return a set with all the squares being attacked by attacker. usefull for goal check and heuristics
         """
@@ -84,9 +94,21 @@ class Board:
         return moves
 
         
+    def get_white_attack_map(self):
+        if not self._w_atk_map_updated:
+            self._white_attack_map = self._get_attack_map(Player.WHITE)
+            self._w_atk_map_updated = True
+        return self._white_attack_map
+    
+    def get_black_attack_map(self):
+        if not self._b_atk_map_updated:
+            self._black_attack_map = self._get_attack_map(Player.BLACK)
+            self._b_atk_map_updated
+        return self._black_attack_map
+        
     def check_winner(self):
-        white_attacks = self.get_attack_map(Player.WHITE)
-        black_attacks = self.get_attack_map(Player.BLACK)
+        white_attacks = self.get_white_attack_map()
+        black_attacks = self.get_black_attack_map()
 
         #home attack win
         for x in range(self.size):

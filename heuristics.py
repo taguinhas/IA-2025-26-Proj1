@@ -79,8 +79,8 @@ heuristicWeights = {
 
 
 def evaluate_board(board: Board, player:Player):
-    white_attacks = board.get_attack_map(Player.WHITE)
-    black_attacks = board.get_attack_map(Player.BLACK)
+    white_attacks = board.get_white_attack_map()
+    black_attacks = board.get_black_attack_map()
 
     material_score = material_eval_board(board)
 
@@ -93,12 +93,12 @@ def evaluate_board(board: Board, player:Player):
 
     controlScore = control_eval_board(white_attacks, black_attacks, defensivecontrolTable)
 
-    total_score = (
-         heuristicWeights["Material"] * material_score +
-         heuristicWeights["Position"] * pos_score +
-         heuristicWeights["Activity"] * activity_score +
-         heuristicWeights["Safety"] * safe_score +
-         heuristicWeights["Control"] * controlScore
+    total_score = ( 0
+        + heuristicWeights["Material"] * material_score
+        + heuristicWeights["Position"] * pos_score 
+        + heuristicWeights["Activity"] * activity_score 
+        + heuristicWeights["Safety"] * safe_score 
+        + heuristicWeights["Control"] * controlScore
     )
     winner = board.check_winner()
     if winner == Player.WHITE:

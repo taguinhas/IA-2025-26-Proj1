@@ -1,7 +1,7 @@
 from players.genericPlayer import genericPlayer
 from game.game import Game
 from game.board import Board
-from game.piece import Move
+from game.piece import Move, Player
 
 import copy
 
@@ -34,52 +34,62 @@ class MinimaxPlayer(genericPlayer):
         '''
         
         player = game.cur_player
-        _, move = self.max_value(game.board, self.depth, float('-inf'), float('inf'), player)
+        if player == Player.WHITE:
+            eval, move = self.max_value(game.board, self.depth, float('-inf'), float('inf'))
+        else:
+            eval, move = self.min_value(game.board, self.depth, float('-inf'), float('inf'))
+        print("pos eval:" + str(eval))
         return move
     
     
-    def max_value(self, board:Board, depth, alpha, beta, original_player):
+    def max_value(self, board:Board, depth, alpha, beta):
         '''
         Returns the evaluation and the move with the max minimax value.
         '''
-        
+        player = Player.WHITE
         if depth == 0 or board.game_over:
             # Evaluate always from the perspective of the AI that started the search
-            return self.eval_func(board, original_player), None
+            return self.eval_func(board, player), None
         
         # your code here
 
         max_eval = float("-inf")
-        for move in board.available_moves(original_player):
+        moves = board.available_moves(player)
+        max_move = moves[0]
+        for move in moves:
             new_state = self._simulate_move(board, move)
-            new_value, _ = self.min_value(new_state, depth - 1, alpha, beta, original_player)
+            new_value, _ = self.min_value(new_state, depth - 1, alpha, beta)
             if(new_value > max_eval):
                 max_eval, max_move = new_value, move
                 alpha = max(alpha, max_eval)
-            if alpha >= beta:
+            if max_eval >= beta:
                 return max_eval, max_move
             
         return max_eval, max_move
         
-    def min_value(self, board:Board, depth, alpha, beta, original_player):
+    def min_value(self, board:Board, depth, alpha, beta):
         '''
         Returns the evaluation and the move with the min minimax value.
         '''
 
+        player = Player.BLACK
         if depth == 0 or board.game_over:
             # Evaluate always from the perspective of the AI that started the search
-            return self.eval_func(board, original_player), None
+            return self.eval_func(board, player), None
         
         # your code here
         
         min_eval = float("inf")
-        for move in board.available_moves(original_player):
+        moves = board.available_moves(player)
+        min_move = moves[0]
+        
+        for move in moves:
             new_state = self._simulate_move(board, move)
-            new_value, _ = self.min_value(new_state, depth - 1, alpha, beta, original_player)
+            new_value, _ = self.max_value(new_state, depth - 1, alpha, beta)
             if(new_value < min_eval):
                 min_eval, min_move = new_value, move
-                alpha = max(alpha, min_eval)
-            if alpha >= beta:
+                beta = min(beta, min_eval)
+            if alpha >= min_eval:
                 return min_eval, min_move
             
         return min_eval, min_move
