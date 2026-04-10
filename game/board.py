@@ -13,11 +13,9 @@ class Board:
         self.board = [[None for _ in range(size)] for _ in range(size)]
         self.white_count = 0
         self.black_count = 0
-        self.game_over = False
         self._white_attack_map = None
         self._black_attack_map = None
-        self._w_atk_map_updated = False
-        self._b_atk_map_updated = False
+        self._atk_maps_updated = False
 
     def in_bounds(self, x:int, y:int) -> bool:
         """Check if a position is within the bounds of the Board"""
@@ -32,8 +30,7 @@ class Board:
         self.board[y][x] = piece
         self.add_count(piece)
 
-        self._w_atk_map_updated = False
-        self._b_atk_map_updated = False
+        self._atk_maps_updated = False
 
 
     def remove_piece(self, x:int, y:int):
@@ -43,8 +40,7 @@ class Board:
         self.sub_count(piece)
 
         self.board[y][x] = None
-        self._w_atk_map_updated = False
-        self._b_atk_map_updated = False
+        self._atk_maps_updated = False
     
     def get_piece(self, x:int, y:int) -> Piece:
         """Get Piece at position"""
@@ -71,53 +67,80 @@ class Board:
 
         return captured
         
-    def _get_attack_map(self, attacker: Player):
+    def _update_attack_map(self):
         """
         return a set with all the squares being attacked by attacker. usefull for goal check and heuristics
         """
-        attacked = [[0 for _ in range(self.size)] for _ in range(self.size)]
-
+        white_attacks = [[0 for _ in range(self.size)] for _ in range(self.size)]
+        black_attacks = [[0 for _ in range(self.size)] for _ in range(self.size)]
         for y in range(self.size):
             for x in range(self.size):
                 piece = self.get_piece(x, y)
 
-                if piece is None or piece.owner != attacker:
+                if piece is None:
                     continue
 
                 moves = piece.get_moves(self, x, y)
-                for move in moves:
-                    attacked[move.fy][move.fx] += 1
+                if(piece.owner == Player.WHITE):
+                    for move in moves:
+                        white_attacks[move.fy][move.fx] += 1
+                else:
+                    for move in moves:
+                        black_attacks[move.fy][move.fx] += 1
+        self._white_attack_map = white_attacks
+        self._black_attack_map = black_attacks
+        self._atk_maps_updated = True       
 
-        return attacked
 
     def available_moves(self, player:Player) -> list:
-        moves = list()
+        player_moves = list()
+        white_attacks = [[0 for _ in range(self.size)] for _ in range(self.size)]
+        black_attacks = [[0 for _ in range(self.size)] for _ in range(self.size)]
+
         for y in range(self.size):
             for x in range(self.size):
                 piece = self.get_piece(x, y)
 
-                if piece is None or piece.owner != player:
+                if piece is None:
                     continue
+                
+                #this logic is not needed for available moves, 
+                #however since we need to run this a lot for the ai it might be worth to caculate here anyways
+                moves = piece.get_moves(self, x, y)
+                if(piece.owner == Player.WHITE):
+                    for move in moves:
+                        white_attacks[move.fy][move.fx] += 1
+                else:
+                    for move in moves:
+                        black_attacks[move.fy][move.fx] += 1
 
-                moves += piece.get_moves(self, x, y)
-        return moves
+                if piece.owner == player:
+                    player_moves += moves
 
-        
+        self._white_attack_map = white_attacks
+        self._black_attack_map = black_attacks
+        self._atk_maps_updated = True       
+
+        return player_moves
+
     def get_white_attack_map(self):
-        if not self._w_atk_map_updated:
-            self._white_attack_map = self._get_attack_map(Player.WHITE)
-            self._w_atk_map_updated = True
+        if not self._atk_maps_updated:
+            self._update_attack_map()
         return self._white_attack_map
     
     def get_black_attack_map(self):
-        if not self._b_atk_map_updated:
-            self._black_attack_map = self._get_attack_map(Player.BLACK)
-            self._b_atk_map_updated = True
+        if not self._atk_maps_updated:
+            self._update_attack_map()
         return self._black_attack_map
         
     def check_winner(self):
-        white_attacks = self.get_white_attack_map()
-        black_attacks = self.get_black_attack_map()
+        #elimination win
+        if self.white_count == 0:
+            return Player.BLACK
+        if self.black_count == 0:
+            return Player.WHITE
+        
+        
 
         white_goal = 0
         black_goal = self.size - 1
@@ -126,25 +149,16 @@ class Board:
             #white goal
             piece = self.get_piece(x, white_goal)
             if piece and piece.owner == Player.WHITE:
+                black_attacks = self.get_black_attack_map()
                 if black_attacks[white_goal][x] == 0:
-                    self.game_over = True
                     return Player.WHITE
 
             #black goal
             piece = self.get_piece(x, black_goal)
             if piece and piece.owner == Player.BLACK:
+                white_attacks = self.get_white_attack_map()
                 if white_attacks[black_goal][x] == 0:
-                    self.game_over = True
                     return Player.BLACK
-
-        #elimination win
-        
-        if self.white_count == 0:
-            self.game_over = True
-            return Player.BLACK
-        if self.black_count == 0:
-            self.game_over = True
-            return Player.WHITE
 
         return None
     
@@ -152,20 +166,16 @@ class Board:
         """Reverses a move and restores any captured piece"""
         moving_piece = self.get_piece(move.fx, move.fy)
 
-        self.place_piece(moving_piece, move.ix, move.iy)
-        # Restore the captured piece (or clear the square if None)
-        if captured_piece:
-            self.place_piece(captured_piece, move.fx, move.fy)
-            self.add_count(captured_piece)
-        else:
-            self.remove_piece(move.fx, move.fy)
+        self.board[move.iy][move.ix] = moving_piece
+        self.board[move.fy][move.fx] = captured_piece
     
-        self.game_over = False
+        if captured_piece:
+            self.add_count(captured_piece)
+
 
     def copy(self):
         new_board = Board(self.size)
         new_board.board = [row[:] for row in self.board]
-        new_board.game_over = self.game_over
         new_board.white_count = self.white_count
         new_board.black_count = self.black_count
         return new_board

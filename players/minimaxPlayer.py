@@ -46,7 +46,7 @@ class MinimaxPlayer(genericPlayer):
         max_eval = float("-inf")
         moves = board.available_moves(Player.WHITE)
         if not moves: 
-            return self.eval_func(board), None
+            return self.eval_func(board, depth), None
         
         max_move = moves[0]
 
@@ -79,7 +79,7 @@ class MinimaxPlayer(genericPlayer):
         min_eval = float("inf")
         moves = board.available_moves(Player.BLACK)
         if not moves: 
-            return self.eval_func(board), None
+            return self.eval_func(board, depth), None
         
         min_move = moves[0]
         
