@@ -11,6 +11,8 @@ class Board:
         """
         self.size = size
         self.board = [[None for _ in range(size)] for _ in range(size)]
+        self.white_count = 0
+        self.black_count = 0
         self.game_over = False
         self._white_attack_map = None
         self._black_attack_map = None
@@ -28,6 +30,7 @@ class Board:
     def place_piece(self, piece:Piece, x:int, y:int):
         """Place a piece on the Board, if position is already occupied old piece gets overwritten and returned"""
         self.board[y][x] = piece
+        self.add_count(piece)
 
         self._w_atk_map_updated = False
         self._b_atk_map_updated = False
@@ -35,6 +38,10 @@ class Board:
 
     def remove_piece(self, x:int, y:int):
         """Clear position at position"""
+
+        piece = self.get_piece(x, y)
+        self.sub_count(piece)
+
         self.board[y][x] = None
         self._w_atk_map_updated = False
         self._b_atk_map_updated = False
@@ -57,6 +64,8 @@ class Board:
         captured = self.get_piece(move.fx, move.fy)
         if captured is not None and captured.owner == moving.owner:
             raise InvalidMoveError(f"Board.move_piece: Cannot capture your own piece. Pos:({move.fx}, {move.fy})")
+        self.sub_count(captured)
+
         self.place_piece(moving, move.fx, move.fy)
         self.remove_piece(move.ix,move.iy)
 
@@ -103,46 +112,74 @@ class Board:
     def get_black_attack_map(self):
         if not self._b_atk_map_updated:
             self._black_attack_map = self._get_attack_map(Player.BLACK)
-            self._b_atk_map_updated
+            self._b_atk_map_updated = True
         return self._black_attack_map
         
     def check_winner(self):
         white_attacks = self.get_white_attack_map()
         black_attacks = self.get_black_attack_map()
 
+        white_goal = 0
+        black_goal = self.size - 1
         #home attack win
         for x in range(self.size):
             #white goal
-            piece = self.get_piece(x, 0)
+            piece = self.get_piece(x, white_goal)
             if piece and piece.owner == Player.WHITE:
-                if black_attacks[0][x] == 0:
+                if black_attacks[white_goal][x] == 0:
                     self.game_over = True
                     return Player.WHITE
 
             #black goal
-            piece = self.get_piece(x, self.size - 1)
+            piece = self.get_piece(x, black_goal)
             if piece and piece.owner == Player.BLACK:
-                if white_attacks[self.size - 1][x] == 0:
+                if white_attacks[black_goal][x] == 0:
                     self.game_over = True
                     return Player.BLACK
 
         #elimination win
-        has_white = False
-        has_black = False
-
-        for row in self.board:
-            for piece in row:
-                if piece:
-                    if piece.owner == Player.WHITE:
-                        has_white = True
-                    else:
-                        has_black = True
-
-        if not has_white:
+        
+        if self.white_count == 0:
             self.game_over = True
             return Player.BLACK
-        if not has_black:
+        if self.black_count == 0:
             self.game_over = True
             return Player.WHITE
 
         return None
+    
+    def undo_move(self, move: Move, captured_piece: Piece):
+        """Reverses a move and restores any captured piece"""
+        moving_piece = self.get_piece(move.fx, move.fy)
+
+        self.place_piece(moving_piece, move.ix, move.iy)
+        # Restore the captured piece (or clear the square if None)
+        if captured_piece:
+            self.place_piece(captured_piece, move.fx, move.fy)
+            self.add_count(captured_piece)
+        else:
+            self.remove_piece(move.fx, move.fy)
+    
+        self.game_over = False
+
+    def copy(self):
+        new_board = Board(self.size)
+        new_board.board = [row[:] for row in self.board]
+        new_board.game_over = self.game_over
+        new_board.white_count = self.white_count
+        new_board.black_count = self.black_count
+        return new_board
+    
+    def add_count(self, piece:Piece):
+        if piece:
+            if piece.owner == Player.WHITE:
+                self.white_count += 1
+            else:
+                self.black_count += 1
+
+    def sub_count(self, piece:Piece):
+        if piece:
+            if piece.owner == Player.WHITE:
+                self.white_count -= 1
+            else:
+                self.black_count -= 1

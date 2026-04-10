@@ -15,13 +15,12 @@ modes = {
     1: "Human vs MiniMax",
     2: "MiniMax vs MiniMax"
 }
-game_mode = -1
 
 white_player = HumanPlayer("Lowly human")
 black_player = HumanPlayer("Lowlier human")
 
 depth = 4
-while(game_mode == -1):
+while True:
     print("Choose game type:")
     for key, value in modes.items():
         print(str(key) + ": " + value)
@@ -31,8 +30,7 @@ while(game_mode == -1):
         case 0:
             white_player = HumanPlayer("Lowly human")
             black_player = HumanPlayer("Lowlier human")
-            game_mode = 0
-
+            break
         case 1:
             print("White(0) or black (1)?")
             color = int(input())
@@ -42,12 +40,12 @@ while(game_mode == -1):
             else:
                 black_player = HumanPlayer("Lowly human")
                 white_player = MinimaxPlayer("HumanDestroyer9000", evaluate_board, depth)
-            game_mode = 1
+            break
 
         case 2:
             white_player = MinimaxPlayer("HumanDestroyer9000", evaluate_board, depth)
             black_player = MinimaxPlayer("HumanDecimator9000", evaluate_board, depth)
-            game_mode = 2 
+            break
 
 while(True):
     game.print_board()

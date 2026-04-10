@@ -4,8 +4,8 @@ from game.piece import Shape, Size, Player, Piece
 
 shapeFactors = {
         Shape.TRIANGLE:1,
-        Shape.SQUARE:2,
-        Shape.CIRCLE:3
+        Shape.SQUARE:3,
+        Shape.CIRCLE:9
     }
 
 posTableWithCenter = [
@@ -32,9 +32,9 @@ needs testing
 maybe only use pos table for small pieces? since  big pieces can just skip the entire board?
 """
 posTable = [
-    [12,12,12,12,12,12],
-    [6, 6, 6, 6, 6, 6 ],
-    [3, 3, 3, 3, 3, 3 ],
+    [50,50,50,50,50,50],
+    [10,10,10,10,10,10],
+    [5, 5, 5, 5, 5, 5 ],
     [2, 2, 2, 2, 2, 2 ],
     [1, 1, 1, 1, 1, 1 ],
     [0, 0, 0, 0, 0, 0 ],
@@ -70,24 +70,29 @@ Weights need testing and tweaking
 im really unsure about the pos values. im afraid it'll sacrifice pieces just to get them further on the board
 """
 heuristicWeights = {
-    "Material": 1,
+    "Material": 10,
+    "Safety": 6,
     "Position": 1,
+    "Control": 2,
     "Activity": 1,
-    "Safety": 1,
-    "Control": 1
 }
 
 
-def evaluate_board(board: Board, player:Player):
+def evaluate_board(board: Board, depth):
+    winner = board.check_winner()
+    if winner == Player.WHITE:
+        return 1000000 + depth
+    if winner == Player.BLACK:
+        return -1000000 - depth
     white_attacks = board.get_white_attack_map()
     black_attacks = board.get_black_attack_map()
 
     material_score = material_eval_board(board)
 
-    pos_score = position_with_table_eval_board(board, posTableWithCenter)
+    pos_score = position_with_table_eval_board(board, posTable)
 
     #very similar logic to control, might not be needed
-    activity_score = activity_eval_board(board)
+    activity_score = activity_with_attack_map(white_attacks) - activity_with_attack_map(black_attacks)
 
     safe_score = safety_eval_board(board, white_attacks, black_attacks)
 
@@ -100,11 +105,7 @@ def evaluate_board(board: Board, player:Player):
         + heuristicWeights["Safety"] * safe_score 
         + heuristicWeights["Control"] * controlScore
     )
-    winner = board.check_winner()
-    if winner == Player.WHITE:
-        return float('inf')
-    elif winner == Player.BLACK:
-        return float('-inf')
+
     return total_score
 
 def material_eval_board(board:Board) ->int:
@@ -182,21 +183,8 @@ def safety_eval_board(board, white_attacks, black_attacks):
 
     return safeScore
 
-def activity_eval_board(board:Board) ->int:
-    activityScore = 0
-    for y in range(board.size):
-        for x in range(board.size):
-            piece = board.get_piece(x, y)
-
-            if piece is None:
-                continue
-
-            ownerFactor = 1 if piece.owner == Player.WHITE else -1
-
-            moves = piece.get_moves(board, x, y)
-
-            activityScore += len(moves) * ownerFactor
-    return activityScore
+def activity_with_attack_map(attack_map) ->int:
+    return sum(sum(row) for row in attack_map)
 
 def control_eval_board(white_attacks, black_attacks, weight_table):
     controlScore = 0
