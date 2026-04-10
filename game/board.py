@@ -172,6 +172,8 @@ class Board:
         if captured_piece:
             self.add_count(captured_piece)
 
+        self._atk_maps_updated = False
+
 
     def copy(self):
         new_board = Board(self.size)

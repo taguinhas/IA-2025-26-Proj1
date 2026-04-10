@@ -2,6 +2,7 @@ from players.genericPlayer import genericPlayer
 from game.game import Game
 from game.board import Board
 from game.piece import Move, Player
+from heuristics import shapeFactors
 
 class MinimaxPlayer(genericPlayer):
     
@@ -47,7 +48,23 @@ class MinimaxPlayer(genericPlayer):
         moves = board.available_moves(Player.WHITE)
         if not moves: 
             return self.eval_func(board, depth), None
+
+        #gemini suggestion to improve prunning
+        def score_move(move):
+            score = 0
+            target_piece = board.get_piece(move.fx, move.fy)
+            if target_piece:
+                # Prioritize capturing high-value pieces
+                score += 100 + shapeFactors[target_piece.shape]
+
+            # Prioritize moving toward the goal row
+            if move.fy == 0: # Assuming 0 is the goal for White
+                score += 50
+
+            return score  
         
+        moves.sort(key=score_move, reverse=True)      
+
         max_move = moves[0]
 
         for move in moves:
@@ -81,6 +98,22 @@ class MinimaxPlayer(genericPlayer):
         if not moves: 
             return self.eval_func(board, depth), None
         
+        #gemini suggestion to improve prunning
+        def score_move(move):
+            score = 0
+            target_piece = board.get_piece(move.fx, move.fy)
+            if target_piece:
+                # Prioritize capturing high-value pieces
+                score += 100 + shapeFactors[target_piece.shape]
+
+            # Prioritize moving toward the goal row
+            if move.fy == 5: # Assuming 0 is the goal for White
+                score += 50
+
+            return score  
+        
+        moves.sort(key=score_move, reverse=True)  
+
         min_move = moves[0]
         
         for move in moves:
@@ -96,3 +129,5 @@ class MinimaxPlayer(genericPlayer):
                 return min_eval, min_move
             
         return min_eval, min_move
+    
+    
