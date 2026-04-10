@@ -1,7 +1,6 @@
 from game.game import Game
 from game.board import Board
 from game.piece import Shape, Size, Player, Piece
-from utils import get_attack_map
 
 shapeFactors = {
         Shape.TRIANGLE:1,
@@ -75,13 +74,13 @@ heuristicWeights = {
     "Position": 1,
     "Activity": 1,
     "Safety": 1,
-    "Control": 1,
+    "Control": 1
 }
 
 
-def evaluate_board(board: Board):
-    white_attacks = get_attack_map(board, Player.WHITE)
-    black_attacks = get_attack_map(board, Player.BLACK)
+def evaluate_board(board: Board, player:Player):
+    white_attacks = board.get_white_attack_map()
+    black_attacks = board.get_black_attack_map()
 
     material_score = material_eval_board(board)
 
@@ -94,14 +93,18 @@ def evaluate_board(board: Board):
 
     controlScore = control_eval_board(white_attacks, black_attacks, defensivecontrolTable)
 
-    total_score = (
-         heuristicWeights["Material"] * material_score +
-         heuristicWeights["Position"] * pos_score +
-         heuristicWeights["Activity"] * activity_score +
-         heuristicWeights["Safety"] * safe_score +
-         heuristicWeights["Control"] * controlScore
+    total_score = ( 0
+        + heuristicWeights["Material"] * material_score
+        + heuristicWeights["Position"] * pos_score 
+        + heuristicWeights["Activity"] * activity_score 
+        + heuristicWeights["Safety"] * safe_score 
+        + heuristicWeights["Control"] * controlScore
     )
-
+    winner = board.check_winner()
+    if winner == Player.WHITE:
+        return float('inf')
+    elif winner == Player.BLACK:
+        return float('-inf')
     return total_score
 
 def material_eval_board(board:Board) ->int:

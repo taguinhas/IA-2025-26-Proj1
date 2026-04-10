@@ -1,4 +1,12 @@
 from enum import Enum
+from dataclasses import dataclass
+
+@dataclass
+class Move:
+    ix: int
+    iy: int
+    fx: int
+    fy: int
 
 class Shape(Enum):
     SQUARE = 1
@@ -50,7 +58,7 @@ class Piece:
 
                 if piece is not None:
                     if piece.owner != self.owner:
-                        moves.append((fx, fy))
+                        moves.append(Move(x, y, fx, fy))
                     break
-                moves.append((fx, fy))
+                moves.append(Move(x, y, fx, fy))
         return moves

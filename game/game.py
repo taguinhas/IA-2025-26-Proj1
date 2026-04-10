@@ -1,6 +1,5 @@
 from game.board import Board
-from game.piece import Piece, Player, Size, Shape
-from utils import get_attack_map
+from game.piece import Piece, Player, Size, Shape, Move
 class Game:
     def __init__(self):
         """
@@ -85,39 +84,3 @@ class Game:
     
                 piece = Piece(owner, shape, size)
                 self.board.place_piece(piece, x, y)
-    def check_winner(self):
-        white_attacks = get_attack_map(self.board, Player.WHITE)
-        black_attacks = get_attack_map(self.board, Player.BLACK)
-
-        #home attack win
-        for x in range(self.board.size):
-            #white goal
-            piece = self.board.get_piece(x, 0)
-            if piece and piece.owner == Player.WHITE:
-                if black_attacks[0][x] == 0:
-                    return Player.WHITE
-
-            #black goal
-            piece = self.board.get_piece(x, self.board.size - 1)
-            if piece and piece.owner == Player.BLACK:
-                if white_attacks[self.board.size - 1][x] == 0:
-                    return Player.BLACK
-
-        #elimination win
-        has_white = False
-        has_black = False
-
-        for row in self.board.board:
-            for piece in row:
-                if piece:
-                    if piece.owner == Player.WHITE:
-                        has_white = True
-                    else:
-                        has_black = True
-
-        if not has_white:
-            return Player.BLACK
-        if not has_black:
-            return Player.WHITE
-
-        return None

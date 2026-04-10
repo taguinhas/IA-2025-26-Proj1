@@ -1,4 +1,4 @@
-from game.piece import Piece
+from game.piece import Piece, Player, Move
 
 class InvalidMoveError(Exception):
     """Raised when a move violates game rules."""
@@ -11,7 +11,11 @@ class Board:
         """
         self.size = size
         self.board = [[None for _ in range(size)] for _ in range(size)]
-
+        self.game_over = False
+        self._white_attack_map = None
+        self._black_attack_map = None
+        self._w_atk_map_updated = False
+        self._b_atk_map_updated = False
 
     def in_bounds(self, x:int, y:int) -> bool:
         """Check if a position is within the bounds of the Board"""
@@ -25,9 +29,15 @@ class Board:
         """Place a piece on the Board, if position is already occupied old piece gets overwritten and returned"""
         self.board[y][x] = piece
 
+        self._w_atk_map_updated = False
+        self._b_atk_map_updated = False
+
+
     def remove_piece(self, x:int, y:int):
         """Clear position at position"""
         self.board[y][x] = None
+        self._w_atk_map_updated = False
+        self._b_atk_map_updated = False
     
     def get_piece(self, x:int, y:int) -> Piece:
         """Get Piece at position"""
@@ -35,20 +45,104 @@ class Board:
             return self.board[y][x]
         return None
     
-    def move_piece(self, ix:int, iy:int, fx:int, fy:int):
-        """Moves piece from (ix, iy) to (fx, fy). Returns captured piece"""
-        if not self.in_bounds(fx, fy):
-            raise InvalidMoveError(f"Board.move_piece: Final position ({fx}, {fy}) out of Bounds for Board of size {self.size}")
+    def move_piece(self, move:Move):
+        """Moves piece. requires "Move" Object. Returns captured piece"""
+        if not self.in_bounds(move.fx, move.fy):
+            raise InvalidMoveError(f"Board.move_piece: Final position ({move.fx}, {move.fy}) out of Bounds for Board of size {self.size}")
         
-        moving = self.get_piece(ix, iy)
+        moving = self.get_piece(move.ix, move.iy)
         if moving is None:
-            raise InvalidMoveError(f"Board.move_piece: No piece at initial position ({ix}, {iy})")
+            raise InvalidMoveError(f"Board.move_piece: No piece at initial position ({move.ix}, {move.iy})")
 
-        captured = self.get_piece(fx, fy)
+        captured = self.get_piece(move.fx, move.fy)
         if captured is not None and captured.owner == moving.owner:
-            raise InvalidMoveError(f"Board.move_piece: Cannot capture your own piece. Pos:({fx}, {fy})")
-        self.place_piece(moving, fx, fy)
-        self.remove_piece(ix,iy)
+            raise InvalidMoveError(f"Board.move_piece: Cannot capture your own piece. Pos:({move.fx}, {move.fy})")
+        self.place_piece(moving, move.fx, move.fy)
+        self.remove_piece(move.ix,move.iy)
 
         return captured
         
+    def _get_attack_map(self, attacker: Player):
+        """
+        return a set with all the squares being attacked by attacker. usefull for goal check and heuristics
+        """
+        attacked = [[0 for _ in range(self.size)] for _ in range(self.size)]
+
+        for y in range(self.size):
+            for x in range(self.size):
+                piece = self.get_piece(x, y)
+
+                if piece is None or piece.owner != attacker:
+                    continue
+
+                moves = piece.get_moves(self, x, y)
+                for move in moves:
+                    attacked[move.fy][move.fx] += 1
+
+        return attacked
+
+    def available_moves(self, player:Player) -> list:
+        moves = list()
+        for y in range(self.size):
+            for x in range(self.size):
+                piece = self.get_piece(x, y)
+
+                if piece is None or piece.owner != player:
+                    continue
+
+                moves += piece.get_moves(self, x, y)
+        return moves
+
+        
+    def get_white_attack_map(self):
+        if not self._w_atk_map_updated:
+            self._white_attack_map = self._get_attack_map(Player.WHITE)
+            self._w_atk_map_updated = True
+        return self._white_attack_map
+    
+    def get_black_attack_map(self):
+        if not self._b_atk_map_updated:
+            self._black_attack_map = self._get_attack_map(Player.BLACK)
+            self._b_atk_map_updated
+        return self._black_attack_map
+        
+    def check_winner(self):
+        white_attacks = self.get_white_attack_map()
+        black_attacks = self.get_black_attack_map()
+
+        #home attack win
+        for x in range(self.size):
+            #white goal
+            piece = self.get_piece(x, 0)
+            if piece and piece.owner == Player.WHITE:
+                if black_attacks[0][x] == 0:
+                    self.game_over = True
+                    return Player.WHITE
+
+            #black goal
+            piece = self.get_piece(x, self.size - 1)
+            if piece and piece.owner == Player.BLACK:
+                if white_attacks[self.size - 1][x] == 0:
+                    self.game_over = True
+                    return Player.BLACK
+
+        #elimination win
+        has_white = False
+        has_black = False
+
+        for row in self.board:
+            for piece in row:
+                if piece:
+                    if piece.owner == Player.WHITE:
+                        has_white = True
+                    else:
+                        has_black = True
+
+        if not has_white:
+            self.game_over = True
+            return Player.BLACK
+        if not has_black:
+            self.game_over = True
+            return Player.WHITE
+
+        return None
