@@ -2,6 +2,10 @@
 import pygame
 from game.game import Game
 from game.piece import Piece, Player, Shape, Size
+from utils.heuristics import evaluate_board
+
+from players.minimaxPlayer import MinimaxPlayer, Strategy
+
 
 # pygame setup
 pygame.init()
@@ -35,6 +39,10 @@ mode_ai_btn = pygame.Rect(width//2 - 150, 450, 300, 60)
 alapo = Game()
 select_piece = None # coords of a clicked piece
 valid_moves = [] # coords of moves selected piece can make
+
+depth = 6
+strat = Strategy.IDSALLTABLES
+ai_player = MinimaxPlayer("HumanDestroyer9000", evaluate_board, depth, strat)
 
 # draw board:
 def draw_board():
@@ -91,10 +99,36 @@ def reset_game():
     select_piece = None
     valid_moves = []
 
+def check_for_winner():
+    global cur_state, winner_txt
+    winner = alapo.board.check_winner()
+    if winner is not None:
+        cur_state = "GAME_OVER"
+        winner_name = "White" if winner == Player.WHITE else "Black"
+        winner_txt = f"{winner_name} Won!"
+        return True
+    return False
+
 # main pygame loop:
 running = True
 while running:
     clock.tick(fps)
+    cur_player = alapo.board.get_cur_player()
+
+    if cur_state == "PLAYING":
+        is_ai_turn = False # Meto falso por default
+        if game_mode == 1 and cur_player == Player.BLACK:
+            is_ai_turn = True # Human Vs. AI, assumo player branco AI preto
+        elif game_mode == 2:
+            is_ai_turn = True # Sempre AI lmao
+
+        if is_ai_turn:
+            move = ai_player.get_player_move(alapo)
+            if move:
+                alapo.board.move_piece(move)
+                check_for_winner()
+            else: # possible error handling, se tipo o move for null i guess
+                cur_state = "GAME_OVER"
 
     # event handling
     for event in pygame.event.get():
@@ -155,11 +189,7 @@ while running:
                             alapo.board.move_piece(move)
 
                             # check if win:
-                            winner = alapo.board.check_winner()
-                            if winner is not None:
-                                cur_state = "GAME_OVER"
-                                winner_name = "White" if winner == Player.WHITE else "Black"
-                                winner_txt = f"{winner_name} Won!"
+                            check_for_winner()
 
                             # reset selection
                             select_piece = None
