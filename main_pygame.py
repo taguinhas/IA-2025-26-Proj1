@@ -177,7 +177,7 @@ while running:
                             valid_moves = []
 
                         # select another piece:
-                        if piece and piece.owner == cur_player:
+                        elif piece and piece.owner == cur_player:
                             select_piece = (x, y)
                             valid_moves = piece.get_moves(alapo.board, x, y)
 
