@@ -23,6 +23,7 @@ class MinimaxPlayer(genericPlayer):
         self.depth = depth
         self.transposition_table = {}
         self.cutoff_moves = {}
+        self.history_table = {}
         self.strategy = strategy
 
         # Track performance
@@ -415,23 +416,25 @@ class MinimaxPlayer(genericPlayer):
         if not moves: 
             return self.eval_func(board, depth), None
 
-        #gemini suggestion to improve prunning
+                #gemini suggestion to improve prunning
         def score_move(m):
             score = 0
-        
-            # Killer move bonus
+
+            key = (m.ix, m.iy, m.fx, m.fy)
+
+            score += self.history_table.get(key, 0)
+
             cutoff = self.cutoff_moves.get(depth)
             if cutoff and (m.ix, m.iy, m.fx, m.fy) == (cutoff.ix, cutoff.iy, cutoff.fx, cutoff.fy):
                 score += 10000
-        
-            # TT move bonus
+
             if best_tt_move and (m.ix, m.iy, m.fx, m.fy) == (best_tt_move.ix, best_tt_move.iy, best_tt_move.fx, best_tt_move.fy):
                 score += 9000
-        
+
             target = board.get_piece(m.fx, m.fy)
             if target:
                 score += 100 + shapeFactors[target.shape]
-        
+
             return score
         
         moves.sort(key=score_move, reverse=True)      
@@ -447,6 +450,8 @@ class MinimaxPlayer(genericPlayer):
             if(new_value > max_eval):
                 max_eval = new_value
                 max_move = move
+                key = (move.ix, move.iy, move.fx, move.fy)
+                self.history_table[key] = self.history_table.get(key, 0) + depth * depth
 
             alpha = max(alpha, max_eval)
             if beta <= alpha:
@@ -512,12 +517,14 @@ class MinimaxPlayer(genericPlayer):
         def score_move(m):
             score = 0
 
-            # Killer move bonus
+            key = (m.ix, m.iy, m.fx, m.fy)
+
+            score += self.history_table.get(key, 0)
+
             cutoff = self.cutoff_moves.get(depth)
             if cutoff and (m.ix, m.iy, m.fx, m.fy) == (cutoff.ix, cutoff.iy, cutoff.fx, cutoff.fy):
                 score += 10000
 
-            # TT move bonus
             if best_tt_move and (m.ix, m.iy, m.fx, m.fy) == (best_tt_move.ix, best_tt_move.iy, best_tt_move.fx, best_tt_move.fy):
                 score += 9000
 
@@ -540,6 +547,9 @@ class MinimaxPlayer(genericPlayer):
             if(new_value < min_eval):
                 min_eval = new_value
                 min_move = move
+                key = (move.ix, move.iy, move.fx, move.fy)
+                self.history_table[key] = self.history_table.get(key, 0) + depth * depth
+
             beta = min(beta, min_eval)
 
             if alpha >= min_eval:
