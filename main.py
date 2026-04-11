@@ -21,7 +21,7 @@ white_player = HumanPlayer("Lowly human")
 black_player = HumanPlayer("Lowlier human")
 
 depth = 6
-strat = Strategy.IDS
+strat = Strategy.IDSALLTABLES
 while True:
     print("Choose game type:")
     for key, value in modes.items():
