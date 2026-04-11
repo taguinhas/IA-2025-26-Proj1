@@ -84,9 +84,11 @@ class MinimaxPlayer(genericPlayer):
         alpha_orig, beta_orig = alpha, beta
         state_hash = board.current_hash
 
+        tt_move = None
         #first we search the TT table for this move
         if self.strategy != Strategy.ABPRUNING:
             tt_entry = self.transposition_table.get(state_hash)
+            tt_move = tt_entry['move'] if tt_entry else None        
             if tt_entry and tt_entry['depth'] >= depth:
                 self.table_hits += 1
                 if tt_entry['flag'] == PruneFlags.EXACT: 
@@ -114,7 +116,6 @@ class MinimaxPlayer(genericPlayer):
             return self.eval_func(board, depth), None
         
         #sort moves by their predicted quality. usefull for better pruning
-        tt_move = tt_entry['move'] if tt_entry else None        
         moves.sort(key=lambda m: self._score_move(board, m, depth, tt_move), reverse=True)
 
         #search set up
