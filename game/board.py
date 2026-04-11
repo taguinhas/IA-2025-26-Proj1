@@ -6,7 +6,7 @@ class InvalidMoveError(Exception):
     pass
 
 class Board:
-    def __init__(self, size:int, starting_player:Player, zobrist:Zobrist = None):
+    def __init__(self, size:int, starting_player:Player = Player.WHITE, zobrist:Zobrist = None):
         """
         Create an empty Board, must place pieces with Board.place_piece()
         """

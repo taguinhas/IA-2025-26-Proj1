@@ -68,5 +68,18 @@ class TestZobrist(unittest.TestCase):
         
         self.assertEqual(actual_h, expected_h, "Full hash calculation doesn't match incremental logic.")
 
+    def test_different_positions_different_hash(self):
+        board1 = [[None]*6 for _ in range(6)]
+        board2 = [[None]*6 for _ in range(6)]
+    
+        p = Piece(Player.WHITE, Shape.SQUARE, Size.BIG)
+    
+        board1[0][0] = p
+        board2[1][1] = p
+    
+        h1 = self.zobrist.hash(board1, Player.WHITE)
+        h2 = self.zobrist.hash(board2, Player.WHITE)
+    
+        self.assertNotEqual(h1, h2)
 if __name__ == '__main__':
     unittest.main()

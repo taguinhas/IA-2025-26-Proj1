@@ -32,12 +32,12 @@ needs testing
 maybe only use pos table for small pieces? since  big pieces can just skip the entire board?
 """
 posTable = [
-    [50,50,50,50,50,50],
-    [10,10,10,10,10,10],
-    [5, 5, 5, 5, 5, 5 ],
-    [2, 2, 2, 2, 2, 2 ],
-    [1, 1, 1, 1, 1, 1 ],
-    [0, 0, 0, 0, 0, 0 ],
+    [15, 15, 15, 15, 15, 15],
+    [5, 5, 5, 5, 5, 5],
+    [3, 3, 3, 3, 3, 3],
+    [1, 1, 1, 1, 1, 1],
+    [0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0],
 ]
 """
 We could also do a table foreach piece(possibly overkill)
@@ -70,11 +70,11 @@ Weights need testing and tweaking
 im really unsure about the pos values. im afraid it'll sacrifice pieces just to get them further on the board
 """
 heuristicWeights = {
-    "Material": 15,
-    "Safety": 10, 
-    "Position": 2,   
-    "Control": 3,    
-    "Activity": 1,
+    "Material": 20,
+    "Safety": 12,      
+    "Position": 5,     
+    "Control": 2,      
+    "Activity": 1,     
 }
 
 

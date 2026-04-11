@@ -19,7 +19,7 @@ modes = {
 white_player = HumanPlayer("Lowly human")
 black_player = HumanPlayer("Lowlier human")
 
-depth = 5
+depth = 6
 while True:
     print("Choose game type:")
     for key, value in modes.items():

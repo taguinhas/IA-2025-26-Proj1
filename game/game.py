@@ -69,3 +69,5 @@ class Game:
     
                 piece = Piece(owner, shape, size)
                 self.board.place_piece(piece, x, y)
+
+        self.board.hash_board()
