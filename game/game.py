@@ -5,11 +5,11 @@ class Game:
         """
         Creates game with 6x6 board and populates it.
         """
-        self.board = Board(6)
+        self.board = Board(6, Player.WHITE)
         self.populate_board()
-        self.cur_player = Player.WHITE
 
     def populate_board(self):
+        """Populates board with alapo's initial board state"""
         shapes = [Shape.SQUARE, Shape.TRIANGLE, Shape.CIRCLE, Shape.CIRCLE, Shape.TRIANGLE, Shape.SQUARE]
         for x, shape in enumerate(shapes):
             #Big white pieces
@@ -23,32 +23,17 @@ class Game:
 
             #Small black pieces
             self.board.place_piece(Piece(Player.BLACK, shape, Size.SMALL),x, 1)
-
-    def print_board(self):
-        shape_map = {
-            Shape.SQUARE: "S",
-            Shape.TRIANGLE: "T",
-            Shape.CIRCLE: "C",
-        }
         
-        for y in range(self.board.size):
-            row_str = ""
+        self.board.hash_board()
 
-            for x in range(self.board.size):
-                piece = self.board.get_piece(x,y)
+    def change_turn(self):
+        self.board.change_turn()
 
-                if piece is None:
-                    row_str += " . "
-                
-                else:
-                    owner = "W" if piece.owner == Player.WHITE else "B"
-                    shape = shape_map[piece.shape]
-                    
-                    if piece.size == Size.BIG:
-                        row_str += owner + shape + " "
-                    else:
-                        row_str += owner.lower() + shape.lower() + " "
-            print(row_str)
+    def get_cur_player(self):
+        return self.board.get_cur_player()
+    
+    def print_board(self):
+        self.board.print()
                     
     def load_board_from_file(self, filename: str):
         shape_map = {

@@ -70,10 +70,10 @@ Weights need testing and tweaking
 im really unsure about the pos values. im afraid it'll sacrifice pieces just to get them further on the board
 """
 heuristicWeights = {
-    "Material": 10,
-    "Safety": 6,
-    "Position": 1,
-    "Control": 2,
+    "Material": 15,
+    "Safety": 10, 
+    "Position": 2,   
+    "Control": 3,    
     "Activity": 1,
 }
 

@@ -1,4 +1,4 @@
-from utils import user_to_board_coords, player_names, size_names, shape_names
+from utils.utils import user_to_board_coords, player_names, size_names, shape_names
 from game.game import Game
 from game.board import Board, InvalidMoveError
 from game.piece import Move
