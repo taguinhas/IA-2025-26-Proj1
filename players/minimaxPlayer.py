@@ -33,9 +33,9 @@ class MinimaxPlayer(genericPlayer):
         """Find the best move using the Minimax alpha-beta algorithm"""
         
         self.nodes = 0
-        if self.strategy == 0:
+        if self.strategy == Strategy.ABPRUNING:
             move = self.minimax_alpha_beta_search(game)
-        elif self.strategy == 1:
+        elif self.strategy == Strategy.ABTABLE:
             move = self.minimax_cached_ab_search(game)
         else:
             move = self.iterative_deepening_search(game)
@@ -175,7 +175,8 @@ class MinimaxPlayer(genericPlayer):
         else:
             eval, move = self.min_value_cache(simulation_board, self.depth, float('-inf'), float('inf'))
         print("pos eval:" + str(eval))
-        print(f"Pos eval: {eval} | TT Hits: {self.table_hits}")
+        print(f"Pos eval: {eval} ")
+        print(f"Nodes: {self.nodes} | TT Hits: {self.table_hits}") 
         return move
     
     def max_value_cache(self, board:Board, depth, alpha, beta):
@@ -358,9 +359,9 @@ class MinimaxPlayer(genericPlayer):
         # Loop from depth 1 up to our max depth
         for current_depth in range(1, self.depth + 1):
             if player == Player.WHITE:
-                eval, move = self.max_value_cache(simulation_board, current_depth, float('-inf'), float('inf'))
+                eval, move = self.max_value_cache2(simulation_board, current_depth, float('-inf'), float('inf'))
             else:
-                eval, move = self.min_value_cache(simulation_board, current_depth, float('-inf'), float('inf'))
+                eval, move = self.min_value_cache2(simulation_board, current_depth, float('-inf'), float('inf'))
             
             best_eval = eval
             best_move = move
@@ -374,3 +375,189 @@ class MinimaxPlayer(genericPlayer):
         print(f"Nodes: {self.nodes} | TT Hits: {self.table_hits}")
 
         return best_move
+    
+    def max_value_cache2(self, board:Board, depth, alpha, beta):
+        '''
+        Returns the evaluation and the move with the max minimax value.
+        '''
+        self.nodes += 1
+
+        alpha_orig = alpha
+        beta_orig = beta
+
+        state_hash = board.current_hash
+
+        tt_entry = self.transposition_table.get(state_hash)
+        if tt_entry and tt_entry['depth'] >= depth:
+            self.table_hits += 1
+            if tt_entry['flag'] == PruneFlags.EXACT:
+                return tt_entry['value'], tt_entry['move']
+
+            elif tt_entry['flag'] == PruneFlags.LOWERBOUND:
+                alpha = max(alpha, tt_entry['value'])
+
+            elif tt_entry['flag'] == PruneFlags.UPPERBOUND:
+                beta = min(beta, tt_entry['value'])
+
+            if alpha >= beta:
+                return tt_entry['value'], tt_entry['move']
+        best_tt_move = tt_entry['move'] if tt_entry else None
+            
+        winner = board.check_winner()
+        if winner == Player.WHITE:
+            return 1000000 + depth, None 
+        if winner == Player.BLACK:
+            return -1000000 - depth, None
+        if depth == 0:
+            return self.eval_func(board, depth), None
+
+        moves = board.available_moves(Player.WHITE)
+        if not moves: 
+            return self.eval_func(board, depth), None
+
+        #gemini suggestion to improve prunning
+        def score_move(m):
+            score = 0
+        
+            # Killer move bonus
+            cutoff = self.cutoff_moves.get(depth)
+            if cutoff and (m.ix, m.iy, m.fx, m.fy) == (cutoff.ix, cutoff.iy, cutoff.fx, cutoff.fy):
+                score += 10000
+        
+            # TT move bonus
+            if best_tt_move and (m.ix, m.iy, m.fx, m.fy) == (best_tt_move.ix, best_tt_move.iy, best_tt_move.fx, best_tt_move.fy):
+                score += 9000
+        
+            target = board.get_piece(m.fx, m.fy)
+            if target:
+                score += 100 + shapeFactors[target.shape]
+        
+            return score
+        
+        moves.sort(key=score_move, reverse=True)      
+
+        max_eval = float("-inf")
+        max_move = moves[0]
+
+        for move in moves:
+            captured = board.move_piece(move)
+            new_value, _ = self.min_value_cache2(board, depth - 1, alpha, beta)
+            board.undo_move(move, captured)
+
+            if(new_value > max_eval):
+                max_eval = new_value
+                max_move = move
+
+            alpha = max(alpha, max_eval)
+            if beta <= alpha:
+                self.cutoff_moves[depth] = move
+                break
+            
+        if max_eval <= alpha_orig:
+            flag = PruneFlags.UPPERBOUND
+        elif max_eval >= beta_orig:
+            flag = PruneFlags.LOWERBOUND
+        else:
+            flag = PruneFlags.EXACT
+
+        self.transposition_table[state_hash] = {
+            'value': max_eval,
+            'depth': depth,
+            'flag': flag,
+            'move': max_move
+        }
+        return max_eval, max_move
+        
+    
+    def min_value_cache2(self, board:Board, depth, alpha, beta):
+        '''
+        Returns the evaluation and the move with the min minimax value.
+        '''
+        self.nodes += 1
+
+        alpha_orig = alpha
+        beta_orig = beta
+
+        state_hash = board.current_hash
+
+        tt_entry = self.transposition_table.get(state_hash)
+        if tt_entry and tt_entry['depth'] >= depth:
+            self.table_hits += 1
+            if tt_entry['flag'] == PruneFlags.EXACT:
+                return tt_entry['value'], tt_entry['move']
+
+            elif tt_entry['flag'] == PruneFlags.LOWERBOUND:
+                alpha = max(alpha, tt_entry['value'])
+
+            elif tt_entry['flag'] == PruneFlags.UPPERBOUND:
+                beta = min(beta, tt_entry['value'])
+
+            if alpha >= beta:
+                return tt_entry['value'], tt_entry['move']
+        best_tt_move = tt_entry['move'] if tt_entry else None
+
+        winner = board.check_winner()
+        if winner == Player.WHITE:
+            return 1000000 + depth, None 
+        if winner == Player.BLACK:
+            return -1000000 - depth, None
+        if depth == 0:
+            return self.eval_func(board,  depth), None
+        
+        moves = board.available_moves(Player.BLACK)
+        if not moves: 
+            return self.eval_func(board, depth), None
+        
+        #gemini suggestion to improve prunning
+        def score_move(m):
+            score = 0
+
+            # Killer move bonus
+            cutoff = self.cutoff_moves.get(depth)
+            if cutoff and (m.ix, m.iy, m.fx, m.fy) == (cutoff.ix, cutoff.iy, cutoff.fx, cutoff.fy):
+                score += 10000
+
+            # TT move bonus
+            if best_tt_move and (m.ix, m.iy, m.fx, m.fy) == (best_tt_move.ix, best_tt_move.iy, best_tt_move.fx, best_tt_move.fy):
+                score += 9000
+
+            target = board.get_piece(m.fx, m.fy)
+            if target:
+                score += 100 + shapeFactors[target.shape]
+
+            return score
+        
+        moves.sort(key=score_move, reverse=True)  
+
+        min_eval = float("inf")
+        min_move = moves[0]
+        
+        for move in moves:
+            captured = board.move_piece(move)
+            new_value, _ = self.max_value_cache2(board, depth - 1, alpha, beta)
+            board.undo_move(move,captured)
+
+            if(new_value < min_eval):
+                min_eval = new_value
+                min_move = move
+            beta = min(beta, min_eval)
+
+            if alpha >= min_eval:
+                self.cutoff_moves[depth] = move
+                break
+            
+        if min_eval <= alpha_orig:
+            flag = PruneFlags.UPPERBOUND
+        elif min_eval >= beta_orig:
+            flag = PruneFlags.LOWERBOUND
+        else:
+            flag = PruneFlags.EXACT
+
+        self.transposition_table[state_hash] = {
+            'value': min_eval,
+            'depth': depth,
+            'flag': flag,
+            'move': min_move
+        }
+
+        return min_eval, min_move

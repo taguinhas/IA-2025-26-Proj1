@@ -7,6 +7,7 @@ from players.humanPlayer import HumanPlayer
 from players.minimaxPlayer import MinimaxPlayer, Strategy
 
 from utils.utils import player_names, size_names, shape_names
+import time
 
 game = Game()
 #game.load_board_from_file("boards/test.txt")
@@ -20,6 +21,7 @@ white_player = HumanPlayer("Lowly human")
 black_player = HumanPlayer("Lowlier human")
 
 depth = 6
+strat = Strategy.IDS
 while True:
     print("Choose game type:")
     for key, value in modes.items():
@@ -36,15 +38,15 @@ while True:
             color = int(input())
             if color == 0:
                 white_player = HumanPlayer("Lowly human")
-                black_player = MinimaxPlayer("HumanDestroyer9000", evaluate_board, depth, Strategy.IDS)
+                black_player = MinimaxPlayer("HumanDestroyer9000", evaluate_board, depth, strat)
             else:
                 black_player = HumanPlayer("Lowly human")
-                white_player = MinimaxPlayer("HumanDestroyer9000", evaluate_board, depth, Strategy.IDS)
+                white_player = MinimaxPlayer("HumanDestroyer9000", evaluate_board, depth, strat)
             break
 
         case 2:
-            white_player = MinimaxPlayer("HumanDestroyer9000", evaluate_board, depth, Strategy.IDS)
-            black_player = MinimaxPlayer("HumanDecimator9000", evaluate_board, depth, Strategy.IDS)
+            white_player = MinimaxPlayer("HumanDestroyer9000", evaluate_board, depth, strat)
+            black_player = MinimaxPlayer("HumanDecimator9000", evaluate_board, depth, strat)
             break
 
 while(True):
@@ -54,7 +56,11 @@ while(True):
     print(f"{player_names[game.get_cur_player()]}'s turn")
 
     try:
+        start = time.time()
         move = player.get_player_move(game)
+        end = time.time()
+
+        print(f"Time: {end - start:.4f}s")
         captured = game.board.move_piece(move)
         if captured is not None:
             print(f"Captured: {player_names[captured.owner]} {size_names[captured.size]} {shape_names[captured.shape]}!")
