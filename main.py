@@ -20,7 +20,7 @@ modes = {
 white_player = HumanPlayer("Lowly human")
 black_player = HumanPlayer("Lowlier human")
 
-depth = 6
+depth = 4
 strat = Strategy.IDSALLTABLES
 while True:
     print("Choose game type:")
@@ -48,8 +48,9 @@ while True:
             white_player = MinimaxPlayer("HumanDestroyer9000", evaluate_board, depth, strat)
             black_player = MinimaxPlayer("HumanDecimator9000", evaluate_board, depth, strat)
             break
-
+move_count = 0
 while(True):
+    move_count += 1
     game.print_board()
     
     player = white_player if game.get_cur_player() == Player.WHITE else black_player
@@ -77,6 +78,6 @@ while(True):
         print(f"Game over {player_names[winner]} wins!")
         game.print_board()
         break
-
+print(move_count)
     
 

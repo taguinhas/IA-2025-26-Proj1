@@ -1,0 +1,83 @@
+{
+  "gen": 0,
+  "population": [
+    {
+      "Material": 103.97090509185885,
+      "Safety": 31.130614553177026,
+      "Position": 10.564551510706831,
+      "Control": 6.9098669838754745
+    },
+    {
+      "Material": 109.93442379481692,
+      "Safety": 45.07447641164737,
+      "Position": 22.240736795012097,
+      "Control": 3.7129738142789943
+    },
+    {
+      "Material": 101.77517837388547,
+      "Safety": 49.66875744362912,
+      "Position": 27.37487296103948,
+      "Control": 0.8856025641023244
+    },
+    {
+      "Material": 100,
+      "Safety": 40,
+      "Position": 20,
+      "Control": 10
+    },
+    {
+      "Material": 100,
+      "Safety": 40,
+      "Position": 20,
+      "Control": 10
+    },
+    {
+      "Material": 99.61900973345595,
+      "Safety": 46.878026322608875,
+      "Position": 11.664839389588161,
+      "Control": 19.3800556237942
+    },
+    {
+      "Material": 100,
+      "Safety": 40,
+      "Position": 20,
+      "Control": 10
+    },
+    {
+      "Material": 100,
+      "Safety": 40,
+      "Position": 20,
+      "Control": 10
+    },
+    {
+      "Material": 100,
+      "Safety": 40,
+      "Position": 20,
+      "Control": 10
+    },
+    {
+      "Material": 106.6250320863388,
+      "Safety": 29.719275981890554,
+      "Position": 29.840084916143578,
+      "Control": 1.753574291994056
+    },
+    {
+      "Material": 100,
+      "Safety": 40,
+      "Position": 20,
+      "Control": 10
+    },
+    {
+      "Material": 100,
+      "Safety": 40,
+      "Position": 20,
+      "Control": 10
+    }
+  ],
+  "best": {
+    "Material": 103.97090509185885,
+    "Safety": 31.130614553177026,
+    "Position": 10.564551510706831,
+    "Control": 6.9098669838754745
+  }
+}

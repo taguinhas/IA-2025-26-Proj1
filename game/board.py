@@ -28,6 +28,8 @@ class Board:
             self.zobrist = Zobrist(self.size)
         else:
             self.zobrist = zobrist
+        self.history = {}
+        
 
     def copy(self):
             """Create a copy of the current board, usefull for minimaxPlayer"""
@@ -37,6 +39,7 @@ class Board:
             new_board.black_count = self.black_count
             new_board.current_hash = self.current_hash
             new_board._turn = self._turn
+            new_board.history = self.history
             return new_board
     
     def hash_board(self):
@@ -111,9 +114,31 @@ class Board:
         self.current_hash ^= self.zobrist.get_piece_hash(moving, move.ix, move.iy)
 
         self.change_turn()
+        key = self.current_hash
+        self.history[key] = self.history.get(key, 0) + 1
 
         return captured
         
+    def undo_move(self, move: Move, captured_piece: Piece):
+        """Reverses a move and restores any captured piece"""
+        moving_piece = self.get_piece(move.fx, move.fy)
+
+        self.current_hash ^= self.zobrist.get_piece_hash(moving_piece, move.fx, move.fy)
+        self.current_hash ^= self.zobrist.get_piece_hash(moving_piece, move.ix, move.iy)
+
+        if captured_piece:
+            self.add_count(captured_piece)
+            self.current_hash ^= self.zobrist.get_piece_hash(captured_piece, move.fx, move.fy)
+
+        self.board[move.iy][move.ix] = moving_piece
+        self.board[move.fy][move.fx] = captured_piece
+        self._atk_maps_updated = False
+
+        self.change_turn()
+
+        key = self.current_hash
+        self.history[key] = max(self.history.get(key, 0) - 1, 0)
+
     def _update_attack_map(self):
         """
         return a set with all the squares being attacked by attacker. usefull for goal check and heuristics
@@ -213,23 +238,6 @@ class Board:
 
         return None
     
-    def undo_move(self, move: Move, captured_piece: Piece):
-        """Reverses a move and restores any captured piece"""
-        moving_piece = self.get_piece(move.fx, move.fy)
-
-        self.current_hash ^= self.zobrist.get_piece_hash(moving_piece, move.fx, move.fy)
-        self.current_hash ^= self.zobrist.get_piece_hash(moving_piece, move.ix, move.iy)
-
-        if captured_piece:
-            self.add_count(captured_piece)
-            self.current_hash ^= self.zobrist.get_piece_hash(captured_piece, move.fx, move.fy)
-
-        self.board[move.iy][move.ix] = moving_piece
-        self.board[move.fy][move.fx] = captured_piece
-        self._atk_maps_updated = False
-
-        self.change_turn()
-
     def add_count(self, piece:Piece):
         """Increments piece count of provided piece's owner"""
         if piece:

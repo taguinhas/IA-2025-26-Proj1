@@ -1,0 +1,6 @@
+.  BT  BC  .  BT  .
+bs  .   .  bc  .  bs
+.   .   WC  .  .   .
+.   WC  .   .  WC  .
+ws  .   .  wc  .  ws
+.  WT  WC  .  WT  .

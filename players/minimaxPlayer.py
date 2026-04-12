@@ -25,13 +25,12 @@ class PruneFlags(Enum):
     LOWERBOUND = 1
     UPPERBOUND = 2
 
-score_weights = {
-    "TT": 1000,
-    "CO": 9000,      
-    "CAP": 100,     
-}
 class MinimaxPlayer(genericPlayer):
-    
+    score_weights = {
+        "TT": 30000,
+        "CO": 10000, 
+        "CAP": 20000    
+    }
     def __init__(self, name, eval_func, depth, strategy:Strategy = Strategy.IDSALLTABLES):
         super().__init__(name)          # pass name to base
         self.eval_func = eval_func
@@ -68,13 +67,13 @@ class MinimaxPlayer(genericPlayer):
             for current_depth in range(1, self.depth + 1):
                 val, move = self._search(board, current_depth, float('-inf'), float('inf'), player)
                 best_move = move
-                print(f"Depth {current_depth} | Eval: {val} | Nodes: {self.nodes}")
+                #print(f"Depth {current_depth} | Eval: {val} | Nodes: {self.nodes}")
                 if abs(val) >= 1000000: 
                     break
         else:
             #standard AB or AB with Table
             _, best_move = self._search(board, self.depth, float('-inf'), float('inf'), player)
-        print(f"TT Hits: {self.table_hits} | Cutoffs: {self.cutoffs}")
+        #print(f"TT Hits: {self.table_hits} | Cutoffs: {self.cutoffs}")
         
         return best_move
     
@@ -166,17 +165,17 @@ class MinimaxPlayer(genericPlayer):
         
         #if the move was found to be the best move for this board state we should check it first
         if tt_move and (move.ix, move.iy, move.fx, move.fy) == (tt_move.ix, tt_move.iy, tt_move.fx, tt_move.fy):
-            score += score_weights['TT']
+            score += self.score_weights['TT']
 
         #then we search moves that caused a cutoff
         cutoff = self.cutoff_moves.get(depth)
         if cutoff and (move.ix, move.iy, move.fx, move.fy) == (cutoff.ix, cutoff.iy, cutoff.fx, cutoff.fy):
-            score += score_weights['CO']
+            score += self.score_weights['CO']
         
         #we check moves that attack other pieces, generally good
         target = board.get_piece(move.fx, move.fy)
         if target:
-            score += score_weights['CAP'] + shapeFactors[target.shape]
+            score += self.score_weights['CAP'] + shapeFactors[target.shape]
 
         return score
         

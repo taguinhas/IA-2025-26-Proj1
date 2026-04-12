@@ -69,16 +69,16 @@ defensivecontrolTable = [
 Weights need testing and tweaking
 im really unsure about the pos values. im afraid it'll sacrifice pieces just to get them further on the board
 """
-heuristicWeights = {
-    "Material": 20,
-    "Safety": 12,      
-    "Position": 5,     
-    "Control": 2,      
-    "Activity": 1,     
+WEIGHTS = {
+    "Material": 100,
+    "Safety": 40,
+    "Position": 20,
+    "Control": 10, #temporary was 10
+    #"Activity": 0, #temporary was 5
 }
 
 
-def evaluate_board(board: Board, depth):
+def evaluate_board(board: Board, depth, weights = WEIGHTS):
     winner = board.check_winner()
     if winner == Player.WHITE:
         return 1000000 + depth
@@ -92,18 +92,23 @@ def evaluate_board(board: Board, depth):
     pos_score = position_with_table_eval_board(board, posTable)
 
     #very similar logic to control, might not be needed
-    activity_score = activity_with_attack_map(white_attacks) - activity_with_attack_map(black_attacks)
+    #activity_score = activity_with_attack_map(white_attacks) - activity_with_attack_map(black_attacks)
 
     safe_score = safety_eval_board(board, white_attacks, black_attacks)
 
     controlScore = control_eval_board(white_attacks, black_attacks, defensivecontrolTable)
 
+    key = board.current_hash
+    #only 1 player needs to be disencouraged to repeat moves
+    repetition_penalty = (0 - board.history.get(key, 0) ** 2)*5
+
     total_score = ( 0
-        + heuristicWeights["Material"] * material_score
-        + heuristicWeights["Position"] * pos_score 
-        + heuristicWeights["Activity"] * activity_score 
-        + heuristicWeights["Safety"] * safe_score 
-        + heuristicWeights["Control"] * controlScore
+        + weights["Material"] * material_score
+        + weights["Position"] * pos_score 
+        #+ weights["Activity"] * activity_score 
+        + weights["Safety"] * safe_score 
+        + weights["Control"] * controlScore
+        + repetition_penalty
     )
 
     return total_score
@@ -136,53 +141,34 @@ def position_with_table_eval_board(board:Board, posTable) ->int:
             posScore += temp * ownerFactor  
     return posScore
 
-def position_with_columns_eval_board(board:Board, posTable) ->int:
-    """TODO:take columns into account"""  
-    posScore = 0
-    for y in range(board.size):
-        for x in range(board.size):
-            piece = board.get_piece(x,y)
-            if piece is None:
-                continue
-            
-            ownerFactor = 1 if piece.owner == Player.WHITE else -1
-            temp = posTable[y][x] if piece.owner == Player.WHITE else posTable[5 - y][x]
-
-            posScore += temp * ownerFactor  
-    return posScore
-
 def safety_eval_board(board, white_attacks, black_attacks):
     """requires attack maps(see utils.get_attack_map)
     """
-    safeScore = 0
+    score = 0
 
     for y in range(board.size):
         for x in range(board.size):
             piece = board.get_piece(x, y)
-            if piece is None:
+            if not piece:
+                continue
+            if piece.owner == Player.WHITE:
+                attackers = black_attacks[y][x]
+                defenders = white_attacks[y][x]
+            else:
+                attackers = white_attacks[y][x]
+                defenders = black_attacks[y][x]
+            if attackers == 0:
                 continue
 
-            if piece.owner == Player.WHITE:
-                danger = black_attacks[y][x] - white_attacks[y][x]
-                ownerFactor = 1
-            else:
-                danger = white_attacks[y][x] - black_attacks[y][x]
-                ownerFactor = -1
+            value = shapeFactors[piece.shape]
+            if piece.size == Size.BIG:
+                value *= 3
 
-            # only care if actually in danger
-            if danger <= 0:
-                safeScore += 0.2 * (-danger) * ownerFactor
+            score -= max(attackers - defenders, 0) * value * (1 if piece.owner == Player.WHITE else -1)
 
-            else:
-                penalty = danger * shapeFactors[piece.shape]
+    return score
 
-                if piece.size == Size.BIG:
-                    penalty *= 3
-
-                safeScore -= penalty * ownerFactor
-
-    return safeScore
-
+#unused
 def activity_with_attack_map(attack_map) ->int:
     return sum(sum(row) for row in attack_map)
 

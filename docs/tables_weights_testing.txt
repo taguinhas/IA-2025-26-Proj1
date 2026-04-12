@@ -1,0 +1,20 @@
+=== BENCHMARK RESULTS ===
+
+start      | ABPRUNING    | Nodes: 275814 | Time: 47.811s | TT:     0 | Cutoffs:     0
+start      | ABTABLE      | Nodes: 170702 | Time: 28.419s | TT:  9065 | Cutoffs:     0
+start      | REGULARIDS   | Nodes: 140958 | Time: 23.865s | TT:  4580 | Cutoffs:     0
+start      | tt_heavy     | Nodes:  86354 | Time: 14.697s | TT:  2790 | Cutoffs: 14838
+start      | killer_heavy | Nodes:  81576 | Time: 13.756s | TT:  2900 | Cutoffs: 14041
+start      | cap_heavy    | Nodes:  95315 | Time: 16.228s | TT:  3018 | Cutoffs: 15821
+mid1       | ABPRUNING    | Nodes: 282033 | Time: 51.129s | TT:     0 | Cutoffs:     0
+mid1       | ABTABLE      | Nodes: 214128 | Time: 35.328s | TT: 10499 | Cutoffs:     0
+mid1       | REGULARIDS   | Nodes:  84799 | Time: 14.187s | TT:  2336 | Cutoffs:     0
+mid1       | tt_heavy     | Nodes:  59844 | Time: 10.490s | TT:  2438 | Cutoffs: 11954
+mid1       | killer_heavy | Nodes:  96666 | Time: 17.755s | TT:  4820 | Cutoffs: 17993
+mid1       | cap_heavy    | Nodes:  89717 | Time: 14.915s | TT:  3041 | Cutoffs: 16215
+tactical1  | ABPRUNING    | Nodes: 179065 | Time: 24.861s | TT:     0 | Cutoffs:     0
+tactical1  | ABTABLE      | Nodes:  89842 | Time: 10.052s | TT: 23968 | Cutoffs:     0
+tactical1  | REGULARIDS   | Nodes:   2856 | Time: 0.391s | TT:     0 | Cutoffs:     0
+tactical1  | tt_heavy     | Nodes:   2850 | Time: 0.387s | TT:     0 | Cutoffs:   121
+tactical1  | killer_heavy | Nodes:   3013 | Time: 0.428s | TT:     0 | Cutoffs:   121
+tactical1  | cap_heavy    | Nodes:   2850 | Time: 0.388s | TT:     0 | Cutoffs:   121
