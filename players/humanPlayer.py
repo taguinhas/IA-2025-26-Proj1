@@ -9,6 +9,7 @@ class HumanPlayer(genericPlayer):
         super().__init__(name)
 
     def get_player_move(self, game:Game):
+        """gets user input from terminal"""
         board = game.board
         print("Which piece to move?(bottom left is (0,0))")
         user_ix = int(input("col number:"))

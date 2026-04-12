@@ -39,6 +39,7 @@ class Piece:
         self.size = size
 
     def get_moves(self, board, x:int, y:int):
+        """given a board and a position returns all possible moves for that piece"""
         directions = self.shape_directions[self.shape]
 
         moves = []

@@ -1,8 +1,8 @@
-#heavely inspired by chatGPT
+#creation assisted by chatGPT
 
 import random
 from players.minimaxPlayer import MinimaxPlayer, Strategy
-from utils.heuristics import evaluate_board, WEIGHTS
+from utils.heuristics import evaluate_board, WEIGHTS, training_weights, adjusted_weights
 
 from game.game import Game
 from game.piece import Player
@@ -65,7 +65,7 @@ def play_match(weightsA, weightsB, max_moves=200):
 
     while True:
         board = game.board
-
+        board.print()
         if board.check_winner() != None:
             return board.check_winner()
         
@@ -160,7 +160,7 @@ def load_checkpoint(filename):
     with open(filename, "r") as f:
         return json.load(f)
     
-def train(generations=20, pop_size=10, checkpoint_file="checkpoints/checkpoint"):
+def train(generations=20, pop_size=10, checkpoint_file="checkpoint"):
     saved = load_checkpoint(checkpoint_file + ".json")
 
     if saved:
@@ -169,8 +169,7 @@ def train(generations=20, pop_size=10, checkpoint_file="checkpoints/checkpoint")
         best = saved["best"]
         print(f"Resuming from generation {start_gen}")
     else:
-        population = build_depth5_population()
-        #population = [WEIGHTS.copy() for _ in range(pop_size)]
+        population = [WEIGHTS.copy() for _ in range(pop_size)]
         start_gen = 0
 
     for gen in range(start_gen, generations):
@@ -207,5 +206,12 @@ def build_depth5_population():
     return elites
 
 if __name__ == "__main__":
-    train(1, 5,"checkpoints/final")
-    #train(70, 10, "checkpoints/elite.json")
+    #train(1, 5,"checkpoints/final")
+    train(20, 10)
+    #print(run_match_pair(0, 1, adjusted_weights, training_weights))
+    #(0, 1, <Player.BLACK: 1>, None)
+    #print(run_match_pair(0, 1, adjusted_weights, WEIGHTS))
+    #(0, 1, <Player.WHITE: 0>, None)
+    #print(run_match_pair(0, 1, WEIGHTS, training_weights))
+    #(0, 1, None, <Player.BLACK: 1>)
+    #training_weights > adjusted_weights > WEIGHTS > training weights ?????   

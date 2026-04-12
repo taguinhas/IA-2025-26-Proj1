@@ -34,6 +34,7 @@ class Zobrist:
         return indices[(piece.owner, piece.size, piece.shape)]
     
     def hash(self, board, cur_player:Player):
+        """return has for a given board"""
         #h := 0
         h = 0
         if cur_player == Player.BLACK:

@@ -77,8 +77,20 @@ WEIGHTS = {
     #"Activity": 0, #temporary was 5
 }
 
+training_weights = {
+    "Material": 194,
+    "Safety": 33,
+    "Position": 1,
+    "Control": 7
+}
 
-def evaluate_board(board: Board, depth, weights = WEIGHTS):
+adjusted_weights = {
+    "Material": 180,
+    "Safety": 45,
+    "Position": 15,
+    "Control": 8
+}
+def evaluate_board(board: Board, depth, weights = adjusted_weights):
     winner = board.check_winner()
     if winner == Player.WHITE:
         return 1000000 + depth

@@ -27,15 +27,19 @@ class Game:
         self.board.hash_board()
 
     def change_turn(self):
+        """Logic moved to board, wrapper kept for compatability"""
         self.board.change_turn()
 
     def get_cur_player(self):
+        """Logic moved to board, wrapper kept for compatability"""
         return self.board.get_cur_player()
     
     def print_board(self):
+        """Logic moved to board, wrapper kept for compatability"""
         self.board.print()
                     
     def load_board_from_file(self, filename: str):
+        """loads file and creates board from its contents"""
         shape_map = {
             "S": Shape.SQUARE,
             "T": Shape.TRIANGLE,
