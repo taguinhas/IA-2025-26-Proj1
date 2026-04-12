@@ -4,6 +4,8 @@ from game.game import Game
 from game.piece import Piece, Player, Shape, Size
 from utils.heuristics import evaluate_board
 
+import threading
+
 from players.minimaxPlayer import MinimaxPlayer, Strategy
 
 
@@ -40,7 +42,7 @@ alapo = Game()
 select_piece = None # coords of a clicked piece
 valid_moves = [] # coords of moves selected piece can make
 
-depth = 6
+depth = 5
 strat = Strategy.IDSALLTABLES
 ai_player = MinimaxPlayer("HumanDestroyer9000", evaluate_board, depth, strat)
 
@@ -111,6 +113,8 @@ def check_for_winner():
 
 # main pygame loop:
 running = True
+ai_thinking = False
+ai_move = None
 while running:
     clock.tick(fps)
     cur_player = alapo.board.get_cur_player()
@@ -123,12 +127,21 @@ while running:
             is_ai_turn = True # Sempre AI lmao
 
         if is_ai_turn:
-            move = ai_player.get_player_move(alapo)
-            if move:
-                alapo.board.move_piece(move)
+            if not ai_thinking:
+                def fetch_ai_move(current_game):
+                    global ai_move, ai_thinking
+                    ai_move = ai_player.get_player_move(current_game)
+                    ai_thinking = False
+
+                ai_thinking = True
+                thread = threading.Thread(target=fetch_ai_move, args=(alapo,))
+                thread.daemon = True # Thread dies if the main program closes
+                thread.start()
+
+            if ai_move is not None:
+                alapo.board.move_piece(ai_move)
                 check_for_winner()
-            else: # possible error handling, se tipo o move for null i guess
-                cur_state = "GAME_OVER"
+                ai_move = None # Clear the move for the next turn
 
     # event handling
     for event in pygame.event.get():

@@ -3,11 +3,12 @@ from game.board import Board
 from game.piece import Shape, Size, Player, Piece
 
 shapeFactors = {
-        Shape.TRIANGLE:1,
-        Shape.SQUARE:3,
-        Shape.CIRCLE:9
+        Shape.TRIANGLE:1, 
+        Shape.SQUARE:2, 
+        Shape.CIRCLE:4
     }
 
+SIZE_FACTOR = 5
 posTableWithCenter = [
     [20,16,16,16,16,20],
     [6, 7, 8, 8, 7, 6 ],
@@ -32,7 +33,7 @@ needs testing
 maybe only use pos table for small pieces? since  big pieces can just skip the entire board?
 """
 posTable = [
-    [15, 15, 15, 15, 15, 15],
+    [15,15,15,15,15,15],
     [5, 5, 5, 5, 5, 5],
     [3, 3, 3, 3, 3, 3],
     [1, 1, 1, 1, 1, 1],
@@ -135,7 +136,7 @@ def material_eval_board(board:Board) ->int:
 
             pieceScore = shapeFactors[piece.shape]
             if piece.size == Size.BIG:
-                pieceScore *=3
+                pieceScore *= SIZE_FACTOR
                 
             materialScore += pieceScore * ownerFactor
     return materialScore
@@ -174,7 +175,7 @@ def safety_eval_board(board, white_attacks, black_attacks):
 
             value = shapeFactors[piece.shape]
             if piece.size == Size.BIG:
-                value *= 3
+                value *= SIZE_FACTOR
 
             score -= max(attackers - defenders, 0) * value * (1 if piece.owner == Player.WHITE else -1)
 
