@@ -11,6 +11,11 @@ from players.minimaxPlayer import MinimaxPlayer, Strategy
 
 # pygame setup
 pygame.init()
+pygame.mixer.init()
+
+move_sound = pygame.mixer.Sound("assets/move-self.mp3")
+capture_sound = pygame.mixer.Sound("assets/capture.mp3")
+
 
 width = 1000
 height = 800
@@ -73,7 +78,7 @@ def draw_pieces(game_instance):
         lx, ly = last_move_pos
         last_x = 200 + (lx*100)
         last_y = 100 + (ly*100)
-        highlight_color = (75, 130, 148) if (ly + lx) % 2 == 0 else (161, 151, 141)
+        highlight_color = (75, 130, 148) if (ly + lx) % 2 == 0 else (201, 191, 181)
         pygame.draw.rect(screen, highlight_color, [last_x, last_y, 100, 100])
     
     for y in range(game_instance.board.size):
@@ -164,6 +169,10 @@ while running:
                 thread.start()
 
             if ai_move is not None:
+                if alapo.board.get_piece(ai_move.fx, ai_move.fy) is not None:
+                    capture_sound.play()
+                else:
+                    move_sound.play()
                 alapo.board.move_piece(ai_move)
                 last_move_pos = (ai_move.fx, ai_move.fy)
                 check_for_winner()
@@ -231,6 +240,10 @@ while running:
                     move_exec = False
                     for move in valid_moves:
                         if move.fx == x and move.fy == y:
+                            if alapo.board.get_piece(move.fx, move.fy) is not None:
+                                capture_sound.play()
+                            else:
+                                move_sound.play()
                             alapo.board.move_piece(move)
                             last_move_pos = (move.fx, move.fy)
 
