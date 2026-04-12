@@ -26,6 +26,7 @@ class PruneFlags(Enum):
     UPPERBOUND = 2
 
 class MinimaxPlayer(genericPlayer):
+    #we were unsure of the weights we should give to each table so we ran tests at "engine_benchmark.py"
     score_weights = {
         "TT": 30000,
         "CO": 10000, 
@@ -33,6 +34,7 @@ class MinimaxPlayer(genericPlayer):
     }
     def __init__(self, name, eval_func, depth, strategy:Strategy = Strategy.IDSALLTABLES):
         super().__init__(name)          # pass name to base
+        #for heuristics check "utils/heuristics.py"
         self.eval_func = eval_func
         self.depth = depth
         self.strategy = strategy
@@ -53,6 +55,7 @@ class MinimaxPlayer(genericPlayer):
         self.nodes = 0
         self.table_hits = 0
         self.cutoffs = 0
+        
         self._trim_cache()
 
         board = game.board.copy()
@@ -87,7 +90,8 @@ class MinimaxPlayer(genericPlayer):
         #first we search the TT table for this move
         if self.strategy != Strategy.ABPRUNING:
             tt_entry = self.transposition_table.get(state_hash)
-            tt_move = tt_entry['move'] if tt_entry else None        
+            tt_move = tt_entry['move'] if tt_entry else None 
+
             if tt_entry and tt_entry['depth'] >= depth:
                 self.table_hits += 1
                 if tt_entry['flag'] == PruneFlags.EXACT: 
@@ -122,7 +126,7 @@ class MinimaxPlayer(genericPlayer):
         best_move = moves[0]
         next_player = Player.BLACK if player == Player.WHITE else Player.WHITE
 
-        #main search. does both max and min to avoid duplicating code. "oldMinimaxPlayer" got extremely chaotic really quick
+        #main search. does both max and min to avoid duplicating code. old MinimaxPlayer got extremely chaotic really quick
         for move in moves:
             captured = board.move_piece(move)
             new_val, _ = self._search(board, depth - 1, alpha, beta, next_player)
@@ -202,5 +206,7 @@ class MinimaxPlayer(genericPlayer):
         if len(self.cutoff_moves) > self.tables_max_size:
             self.cutoff_moves.clear()
 
+        #there are better ways to trim cache
+        #possibly decay old moves (every turn value *= 0.9) and then only remove those bellow a threshold?
         if len(self.history_table) > self.tables_max_size:
             self.history_table.clear()

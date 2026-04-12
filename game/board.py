@@ -28,6 +28,7 @@ class Board:
             self.zobrist = Zobrist(self.size)
         else:
             self.zobrist = zobrist
+        #ai was repeating moves so we keep a history
         self.history = {}
         
 
@@ -57,7 +58,7 @@ class Board:
         self.change_turn_hash()
 
     def change_turn_hash(self):
-        """Change the hash of the player turns"""
+        """Change the hash to reflect a change in turn"""
         self.current_hash ^= self.zobrist.black_to_move
 
     def in_bounds(self, x:int, y:int) -> bool:
@@ -67,6 +68,12 @@ class Board:
     def is_occupied(self, x:int, y:int) -> bool:
         """Check if position on the Board is occupied"""
         return self.board[y][x] is not None
+    
+    def get_piece(self, x:int, y:int) -> Piece:
+        """Get Piece at position"""
+        if(self.in_bounds(x, y)):
+            return self.board[y][x]
+        return None
     
     def place_piece(self, piece:Piece, x:int, y:int):
         """Place a piece on the Board, if position is already occupied old piece gets overwritten and returned"""
@@ -85,12 +92,6 @@ class Board:
         self.board[y][x] = None
         self._atk_maps_updated = False
     
-    def get_piece(self, x:int, y:int) -> Piece:
-        """Get Piece at position"""
-        if(self.in_bounds(x, y)):
-            return self.board[y][x]
-        return None
-    
     def move_piece(self, move:Move):
         """Moves piece. requires "Move" Object. Returns captured piece"""
         if not self.in_bounds(move.fx, move.fy):
@@ -106,10 +107,12 @@ class Board:
         
         self.sub_count(captured)
         if captured:
+            #using the xor property that A ^ A = 0
             self.current_hash ^= self.zobrist.get_piece_hash(captured, move.fx, move.fy)
 
         self.place_piece(moving, move.fx, move.fy)
         self.current_hash ^= self.zobrist.get_piece_hash(moving, move.fx, move.fy)
+
         self.remove_piece(move.ix,move.iy)
         self.current_hash ^= self.zobrist.get_piece_hash(moving, move.ix, move.iy)
 
@@ -122,8 +125,10 @@ class Board:
     def undo_move(self, move: Move, captured_piece: Piece):
         """Reverses a move and restores any captured piece"""
         moving_piece = self.get_piece(move.fx, move.fy)
-
+  
+        #remove piece from move.f using the xor property that A ^ A = 0
         self.current_hash ^= self.zobrist.get_piece_hash(moving_piece, move.fx, move.fy)
+        #add to move.i
         self.current_hash ^= self.zobrist.get_piece_hash(moving_piece, move.ix, move.iy)
 
         if captured_piece:
@@ -255,6 +260,7 @@ class Board:
                 self.black_count -= 1
     
     def print(self):
+        """prints board on terminal"""
         shape_map = {
             Shape.SQUARE: "S",
             Shape.TRIANGLE: "T",

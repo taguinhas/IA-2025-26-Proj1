@@ -65,7 +65,6 @@ def play_match(weightsA, weightsB, max_moves=200):
 
     while True:
         board = game.board
-        board.print()
         if board.check_winner() != None:
             return board.check_winner()
         
@@ -105,7 +104,6 @@ def tournament_step(population, matches_per_agent=3):
 
     match_tasks = []
     for i in range(total_size):
-        print(i)
         for _ in range(matches_per_agent):
             j = random.randrange(total_size)
             while j == i:
