@@ -25,7 +25,7 @@ def make_player(weights):
     return MinimaxPlayer(
         "AI",
         eval_func = make_eval(weights),
-        depth=3,
+        depth=5,
         strategy=Strategy.IDSALLTABLES
     )
 
@@ -39,7 +39,7 @@ def mutate(weights):
     new = weights.copy()
 
     for k in new:
-        change = random.uniform(-10, 10)
+        change = random.uniform(-5, 5)
         if random.random() < 0.2:
             change = random.uniform(-40, 40)  # occasional big mutation
         new[k] += change
@@ -105,6 +105,7 @@ def tournament_step(population, matches_per_agent=3):
 
     match_tasks = []
     for i in range(total_size):
+        print(i)
         for _ in range(matches_per_agent):
             j = random.randrange(total_size)
             while j == i:
@@ -159,7 +160,7 @@ def load_checkpoint(filename):
     with open(filename, "r") as f:
         return json.load(f)
     
-def train(generations=20, pop_size=10, checkpoint_file="checkpoints2/checkpoint"):
+def train(generations=20, pop_size=10, checkpoint_file="checkpoints/checkpoint"):
     saved = load_checkpoint(checkpoint_file + ".json")
 
     if saved:
@@ -168,7 +169,8 @@ def train(generations=20, pop_size=10, checkpoint_file="checkpoints2/checkpoint"
         best = saved["best"]
         print(f"Resuming from generation {start_gen}")
     else:
-        population = [WEIGHTS.copy() for _ in range(pop_size)]
+        population = build_depth5_population()
+        #population = [WEIGHTS.copy() for _ in range(pop_size)]
         start_gen = 0
 
     for gen in range(start_gen, generations):
@@ -194,5 +196,16 @@ def train(generations=20, pop_size=10, checkpoint_file="checkpoints2/checkpoint"
         
     return best
 
+def build_depth5_population():
+    elites = [
+        {"Material": 196.97, "Safety": 36.63, "Position": 2.45, "Control": 3.60},
+        {"Material": 179.10, "Safety": 28.35, "Position": 26.90, "Control": 5.42},
+        {"Material": 200.00, "Safety": 55.66, "Position": 9.84, "Control": 13.70},
+        {"Material": 195.93, "Safety": 115.62, "Position": 12.10, "Control": 32.82},
+        {"Material": 100,"Safety": 40, "Position": 20, "Control": 10},
+    ]
+    return elites
+
 if __name__ == "__main__":
-    train(40, 12)
+    train(1, 5,"checkpoints/final")
+    #train(70, 10, "checkpoints/elite.json")

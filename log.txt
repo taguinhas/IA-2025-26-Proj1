@@ -585,3 +585,154 @@ GEN 39
   #3 score=10.0 weights={'Material': 158.0261232444187, 'Safety': 36.61174732085898, 'Position': 0, 'Control': 8.210974272579532}
   #4 score=9.5 weights={'Material': 200, 'Safety': 102.328943120104, 'Position': 6.229957044863985, 'Control': 12.692470648806621}
   #5 score=9 weights={'Material': 200, 'Safety': 94.78451971839694, 'Position': 2.646151696966232, 'Control': 17.333092925500655}
+
+GEN 40
+  #1 score=16 weights={'Material': 185.64370200288607, 'Safety': 35.5582927561091, 'Position': 0.611951129057207, 'Control': 3.874738848383336}
+  #2 score=12.0 weights={'Material': 170.822606107741, 'Safety': 24.502383704336523, 'Position': 2.7995763313247757, 'Control': 11.872443943687816}
+  #3 score=9.5 weights={'Material': 182.698453653603, 'Safety': 47.47631735574137, 'Position': 0, 'Control': 10.086378459354354}
+  #4 score=9.5 weights={'Material': 158.0261232444187, 'Safety': 36.61174732085898, 'Position': 0, 'Control': 8.210974272579532}
+  #5 score=9.5 weights={'Material': 200, 'Safety': 27.039991069678088, 'Position': 10.015859820714063, 'Control': 9.022924186990382}
+
+GEN 41
+  #1 score=11.5 weights={'Material': 176.2407108986709, 'Safety': 36.31178799618786, 'Position': 1.3271605700835263, 'Control': 0}
+  #2 score=9.5 weights={'Material': 187.9030295489825, 'Safety': 42.92932247844929, 'Position': 2.835236514757149, 'Control': 2.0915938749867973}
+  #3 score=8.5 weights={'Material': 160.10206872570618, 'Safety': 18.954711434871637, 'Position': 0, 'Control': 4.677202942297667}
+  #4 score=8 weights={'Material': 185.64370200288607, 'Safety': 35.5582927561091, 'Position': 0.611951129057207, 'Control': 3.874738848383336}
+  #5 score=8.0 weights={'Material': 158.0261232444187, 'Safety': 36.61174732085898, 'Position': 0, 'Control': 8.210974272579532}
+
+GEN 42
+  #1 score=11.0 weights={'Material': 158.0261232444187, 'Safety': 36.61174732085898, 'Position': 0, 'Control': 8.210974272579532}
+  #2 score=10.5 weights={'Material': 186.34928376007585, 'Safety': 71.56933115141543, 'Position': 14.28841017251748, 'Control': 0}
+  #3 score=10.5 weights={'Material': 165.18569373955586, 'Safety': 52.22633190140134, 'Position': 0, 'Control': 18.06780027765201}
+  #4 score=8.0 weights={'Material': 178.11199236533167, 'Safety': 29.68741803952033, 'Position': 0, 'Control': 19.409613993969476}
+  #5 score=7.5 weights={'Material': 185.64370200288607, 'Safety': 35.5582927561091, 'Position': 0.611951129057207, 'Control': 3.874738848383336}
+
+GEN 43
+  #1 score=13.5 weights={'Material': 177.10646086394894, 'Safety': 39.47751280449404, 'Position': 0, 'Control': 6.307248934746081}
+  #2 score=13.0 weights={'Material': 165.18569373955586, 'Safety': 52.22633190140134, 'Position': 0, 'Control': 18.06780027765201}
+  #3 score=10.0 weights={'Material': 200, 'Safety': 34.196422188427725, 'Position': 10.080342858041748, 'Control': 9.14788998061181}
+  #4 score=10.0 weights={'Material': 149.92517735832888, 'Safety': 27.02908120645447, 'Position': 0, 'Control': 5.430002173540078}
+  #5 score=7.0 weights={'Material': 186.70610509025175, 'Safety': 39.6060493672449, 'Position': 7.827139923614726, 'Control': 0.30924981863031853}
+
+GEN 44
+  #1 score=11 weights={'Material': 175.07780168959394, 'Safety': 76.172858986963, 'Position': 26.638290249112394, 'Control': 1.7863320216117113}
+  #2 score=11 weights={'Material': 184.97403694614462, 'Safety': 38.53232577607155, 'Position': 7.592842897340976, 'Control': 0}
+  #3 score=9.0 weights={'Material': 200, 'Safety': 34.196422188427725, 'Position': 10.080342858041748, 'Control': 9.14788998061181}
+  #4 score=9.0 weights={'Material': 200, 'Safety': 30.36188612927422, 'Position': 0.38251148175610616, 'Control': 2.9321909534936674}
+  #5 score=8.0 weights={'Material': 165.18569373955586, 'Safety': 52.22633190140134, 'Position': 0, 'Control': 18.06780027765201}
+
+GEN 45
+  #1 score=13.0 weights={'Material': 155.42060439616114, 'Safety': 32.53026818287417, 'Position': 8.957627542679994, 'Control': 0.8772428896842737}
+  #2 score=12.0 weights={'Material': 145.93615295006958, 'Safety': 25.051062503736915, 'Position': 6.534016711896838, 'Control': 2.82144368659133}
+  #3 score=10.0 weights={'Material': 191.11876896955894, 'Safety': 27.47757512655203, 'Position': 0, 'Control': 7.827933564426258}
+  #4 score=8.0 weights={'Material': 175.07780168959394, 'Safety': 76.172858986963, 'Position': 26.638290249112394, 'Control': 1.7863320216117113}
+  #5 score=7.5 weights={'Material': 167.29638340543795, 'Safety': 58.69768340051919, 'Position': 6.651580954448065, 'Control': 0}
+
+GEN 46
+  #1 score=16.0 weights={'Material': 149.92517735832888, 'Safety': 27.02908120645447, 'Position': 0, 'Control': 5.430002173540078}
+  #2 score=11.0 weights={'Material': 191.11876896955894, 'Safety': 27.47757512655203, 'Position': 0, 'Control': 7.827933564426258}
+  #3 score=10.5 weights={'Material': 182.4799002819724, 'Safety': 80.84285902491543, 'Position': 25.795048595941438, 'Control': 8.095044512700033}
+  #4 score=9.5 weights={'Material': 196.96662509375702, 'Safety': 36.63471439260742, 'Position': 2.4515858291492716, 'Control': 3.6027831774480514}
+  #5 score=9.5 weights={'Material': 152.61846116304542, 'Safety': 49.85848370500208, 'Position': 6.170382492585187, 'Control': 0}
+
+GEN 47
+  #1 score=14.0 weights={'Material': 196.96662509375702, 'Safety': 36.63471439260742, 'Position': 2.4515858291492716, 'Control': 3.6027831774480514}
+  #2 score=11.0 weights={'Material': 194.29193530169408, 'Safety': 35.5792090083696, 'Position': 7.711124165943268, 'Control': 8.099705452958473}
+  #3 score=10.5 weights={'Material': 190.45351470368865, 'Safety': 42.75701626362167, 'Position': 8.121356757951071, 'Control': 0}
+  #4 score=9.0 weights={'Material': 157.94311039183196, 'Safety': 33.513747207906064, 'Position': 3.4258051916088323, 'Control': 0}
+  #5 score=8 weights={'Material': 116.62938949926351, 'Safety': 40.274367168269094, 'Position': 0, 'Control': 6.588558864162962}
+
+GEN 48
+  #1 score=10.5 weights={'Material': 196.96662509375702, 'Safety': 36.63471439260742, 'Position': 2.4515858291492716, 'Control': 3.6027831774480514}
+  #2 score=10.0 weights={'Material': 174.74039018389615, 'Safety': 34.67077115109828, 'Position': 6.704627841671764, 'Control': 3.933108811058137}
+  #3 score=9.0 weights={'Material': 152.61846116304542, 'Safety': 49.85848370500208, 'Position': 6.170382492585187, 'Control': 0}
+  #4 score=8.0 weights={'Material': 184.97403694614462, 'Safety': 38.53232577607155, 'Position': 7.592842897340976, 'Control': 0}
+  #5 score=8 weights={'Material': 152.9754778617464, 'Safety': 65.01630113387428, 'Position': 1.425279143303655, 'Control': 0}
+
+GEN 49
+  #1 score=12.0 weights={'Material': 157.94311039183196, 'Safety': 33.513747207906064, 'Position': 3.4258051916088323, 'Control': 0}
+  #2 score=10.0 weights={'Material': 144.43636107765192, 'Safety': 41.259925795262944, 'Position': 20.699677990481565, 'Control': 7.5572890582130725}
+  #3 score=9.5 weights={'Material': 149.83575218100023, 'Safety': 28.5499106963463, 'Position': 0, 'Control': 3.0857466676743766}
+  #4 score=9 weights={'Material': 149.92517735832888, 'Safety': 27.02908120645447, 'Position': 0, 'Control': 5.430002173540078}
+  #5 score=9 weights={'Material': 161.1201729252703, 'Safety': 60.658165127906514, 'Position': 11.048349441849805, 'Control': 0}
+
+GEN 50
+  #1 score=12.0 weights={'Material': 149.92517735832888, 'Safety': 27.02908120645447, 'Position': 0, 'Control': 5.430002173540078}
+  #2 score=12 weights={'Material': 163.7546846938862, 'Safety': 40.33159511586112, 'Position': 0, 'Control': 9.69847188101506}
+  #3 score=9.5 weights={'Material': 152.61846116304542, 'Safety': 49.85848370500208, 'Position': 6.170382492585187, 'Control': 0}
+  #4 score=9.0 weights={'Material': 191.65924427354247, 'Safety': 41.26225328335894, 'Position': 0, 'Control': 0}
+  #5 score=8.0 weights={'Material': 191.88076146963851, 'Safety': 35.02348414580879, 'Position': 9.354268693122153, 'Control': 6.909388164124691}
+
+GEN 51
+  #1 score=13.0 weights={'Material': 149.92517735832888, 'Safety': 27.02908120645447, 'Position': 0, 'Control': 5.430002173540078}
+  #2 score=12.0 weights={'Material': 163.7546846938862, 'Safety': 40.33159511586112, 'Position': 0, 'Control': 9.69847188101506}
+  #3 score=8 weights={'Material': 143.1785650668422, 'Safety': 24.868931083529773, 'Position': 5.336843435321759, 'Control': 6.418738163253803}
+  #4 score=8 weights={'Material': 156.74849289265524, 'Safety': 46.74633764324636, 'Position': 0, 'Control': 16.19251370809401}
+  #5 score=8.0 weights={'Material': 102.75960362345509, 'Safety': 21.07361592885152, 'Position': 1.2914503014608751, 'Control': 14.548829739635753}
+
+GEN 52
+  #1 score=13.5 weights={'Material': 181.3021565054387, 'Safety': 45.32252843975725, 'Position': 0, 'Control': 12.063709347191582}
+  #2 score=12.5 weights={'Material': 163.7546846938862, 'Safety': 40.33159511586112, 'Position': 0, 'Control': 9.69847188101506}
+  #3 score=11.5 weights={'Material': 149.92517735832888, 'Safety': 27.02908120645447, 'Position': 0, 'Control': 5.430002173540078}
+  #4 score=11.0 weights={'Material': 93.12505229293016, 'Safety': 25.50547105836645, 'Position': 24.911966380537713, 'Control': 18.00370565699475}
+  #5 score=10 weights={'Material': 116.26951305051912, 'Safety': 49.21766016698959, 'Position': 28.55690791049242, 'Control': 11.837446212734783}
+
+GEN 53
+  #1 score=14.5 weights={'Material': 149.92517735832888, 'Safety': 27.02908120645447, 'Position': 0, 'Control': 5.430002173540078}
+  #2 score=13.0 weights={'Material': 157.14358110712462, 'Safety': 40.9727518738436, 'Position': 7.37004073757473, 'Control': 10.741544068492749}
+  #3 score=11.5 weights={'Material': 181.3021565054387, 'Safety': 45.32252843975725, 'Position': 0, 'Control': 12.063709347191582}
+  #4 score=9.5 weights={'Material': 102.75960362345509, 'Safety': 21.07361592885152, 'Position': 1.2914503014608751, 'Control': 14.548829739635753}
+  #5 score=8.5 weights={'Material': 107.41217389670565, 'Safety': 30.234433809823138, 'Position': 3.6950245233754906, 'Control': 6.16736056803386}
+
+GEN 54
+  #1 score=10 weights={'Material': 154.86577053338547, 'Safety': 32.80419739674762, 'Position': 5.1881360745108, 'Control': 5.152586858520017}
+  #2 score=10.0 weights={'Material': 113.3668998111826, 'Safety': 44.23635082704757, 'Position': 23.59260784183724, 'Control': 0}
+  #3 score=9.0 weights={'Material': 157.14358110712462, 'Safety': 40.9727518738436, 'Position': 7.37004073757473, 'Control': 10.741544068492749}
+  #4 score=9.0 weights={'Material': 177.68995083687653, 'Safety': 37.72838512324694, 'Position': 7.589518872881708, 'Control': 38.26284396773924}
+  #5 score=8.5 weights={'Material': 163.7546846938862, 'Safety': 40.33159511586112, 'Position': 0, 'Control': 9.69847188101506}
+
+GEN 55
+  #1 score=15 weights={'Material': 152.89522865070802, 'Safety': 28.120324956921017, 'Position': 0, 'Control': 6.865382182271198}
+  #2 score=13.5 weights={'Material': 107.41217389670565, 'Safety': 30.234433809823138, 'Position': 3.6950245233754906, 'Control': 6.16736056803386}
+  #3 score=10 weights={'Material': 193.72825516943595, 'Safety': 32.96562237360983, 'Position': 1.1751318732554816, 'Control': 7.149161429560648}
+  #4 score=9.5 weights={'Material': 149.92517735832888, 'Safety': 27.02908120645447, 'Position': 0, 'Control': 5.430002173540078}
+  #5 score=8.0 weights={'Material': 163.7546846938862, 'Safety': 40.33159511586112, 'Position': 0, 'Control': 9.69847188101506}
+
+GEN 56
+  #1 score=12.5 weights={'Material': 107.41217389670565, 'Safety': 30.234433809823138, 'Position': 3.6950245233754906, 'Control': 6.16736056803386}
+  #2 score=12 weights={'Material': 193.72825516943595, 'Safety': 32.96562237360983, 'Position': 1.1751318732554816, 'Control': 7.149161429560648}
+  #3 score=12 weights={'Material': 189.126945861906, 'Safety': 29.28640524714347, 'Position': 14.466781687213707, 'Control': 5.050598882105994}
+  #4 score=10.0 weights={'Material': 149.92517735832888, 'Safety': 27.02908120645447, 'Position': 0, 'Control': 5.430002173540078}
+  #5 score=10.0 weights={'Material': 154.82724402225702, 'Safety': 34.951561002785326, 'Position': 0, 'Control': 0}
+
+GEN 57
+  #1 score=12.5 weights={'Material': 107.41217389670565, 'Safety': 30.234433809823138, 'Position': 3.6950245233754906, 'Control': 6.16736056803386}
+  #2 score=10.0 weights={'Material': 193.72825516943595, 'Safety': 32.96562237360983, 'Position': 1.1751318732554816, 'Control': 7.149161429560648}
+  #3 score=9.5 weights={'Material': 173.73036455723044, 'Safety': 41.40992304594211, 'Position': 0, 'Control': 27.693595542920583}
+  #4 score=9.5 weights={'Material': 101.73220696244944, 'Safety': 30.630883726109374, 'Position': 3.9810686530218806, 'Control': 0.9808114800594989}
+  #5 score=8.0 weights={'Material': 172.43858799052236, 'Safety': 28.88584191960153, 'Position': 0, 'Control': 9.651671002586033}
+
+GEN 58
+  #1 score=15.0 weights={'Material': 179.09722980436305, 'Safety': 28.350463602528833, 'Position': 26.897932062065777, 'Control': 5.415015938844803}
+  #2 score=11.5 weights={'Material': 189.126945861906, 'Safety': 29.28640524714347, 'Position': 14.466781687213707, 'Control': 5.050598882105994}
+  #3 score=9.5 weights={'Material': 193.72825516943595, 'Safety': 32.96562237360983, 'Position': 1.1751318732554816, 'Control': 7.149161429560648}
+  #4 score=9.5 weights={'Material': 145.22805157321991, 'Safety': 41.74624033778353, 'Position': 42.44899773231826, 'Control': 0}
+  #5 score=9.0 weights={'Material': 101.73220696244944, 'Safety': 30.630883726109374, 'Position': 3.9810686530218806, 'Control': 0.9808114800594989}
+
+GEN 59
+  #1 score=14.5 weights={'Material': 193.72825516943595, 'Safety': 32.96562237360983, 'Position': 1.1751318732554816, 'Control': 7.149161429560648}
+  #2 score=11.5 weights={'Material': 189.126945861906, 'Safety': 29.28640524714347, 'Position': 14.466781687213707, 'Control': 5.050598882105994}
+  #3 score=8.0 weights={'Material': 181.48837477834093, 'Safety': 37.93545644946727, 'Position': 30.516696595986517, 'Control': 9.099180197892814}
+  #4 score=7.5 weights={'Material': 200, 'Safety': 39.00466203373314, 'Position': 10.27851373067002, 'Control': 10.409380072650492}
+  #5 score=7.5 weights={'Material': 179.99876670352725, 'Safety': 22.448168413525675, 'Position': 16.235695119421777, 'Control': 0}
+
+GEN 0
+  #1 score=6.0 weights={'Material': 100, 'Safety': 40, 'Position': 20, 'Control': 10}
+  #2 score=6.0 weights={'Material': 95.96104802311822, 'Safety': 43.31281553306816, 'Position': 24.314943823154938, 'Control': 11.491190933097188}
+
+GEN 0
+  #1 score=12.0 weights={'Material': 196.97, 'Safety': 36.63, 'Position': 2.45, 'Control': 3.6}
+  #2 score=8 weights={'Material': 179.1, 'Safety': 28.35, 'Position': 26.9, 'Control': 5.42}
+  #3 score=7 weights={'Material': 181.34076169263693, 'Safety': 24.025858950532502, 'Position': 23.195718373568923, 'Control': 0}
+  #4 score=6.5 weights={'Material': 198.31035542791358, 'Safety': 45.86248046240773, 'Position': 11.788418300010505, 'Control': 14.286866907849207}
+  #5 score=5.5 weights={'Material': 200.0, 'Safety': 55.66, 'Position': 9.84, 'Control': 13.7}

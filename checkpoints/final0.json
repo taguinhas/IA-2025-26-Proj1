@@ -1,0 +1,41 @@
+{
+  "gen": 0,
+  "population": [
+    {
+      "Material": 196.97,
+      "Safety": 36.63,
+      "Position": 2.45,
+      "Control": 3.6
+    },
+    {
+      "Material": 179.1,
+      "Safety": 28.35,
+      "Position": 26.9,
+      "Control": 5.42
+    },
+    {
+      "Material": 181.34076169263693,
+      "Safety": 24.025858950532502,
+      "Position": 23.195718373568923,
+      "Control": 0
+    },
+    {
+      "Material": 198.31035542791358,
+      "Safety": 45.86248046240773,
+      "Position": 11.788418300010505,
+      "Control": 14.286866907849207
+    },
+    {
+      "Material": 200,
+      "Safety": 52.787574441319606,
+      "Position": 7.833299414257234,
+      "Control": 16.469527126316734
+    }
+  ],
+  "best": {
+    "Material": 196.97,
+    "Safety": 36.63,
+    "Position": 2.45,
+    "Control": 3.6
+  }
+}
