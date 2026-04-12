@@ -16,7 +16,7 @@ width = 1000
 height = 800
 screen = pygame.display.set_mode((width, height))
 pygame.display.set_caption('Alapo')
-cur_state = "MENU" # MENU, MODE, PLAYING, GAME_OVER
+cur_state = "MENU" # MENU, MODE, PLAYING, GAME_OVER, CREDITS
 game_mode = 0 # 0: PVP, 1: P vs AI, 2: AI vs AI  
 clock = pygame.time.Clock()
 fps = 30
@@ -32,6 +32,7 @@ winner_txt = ""
 menu_btn = pygame.Rect(width//2 - 100, height//2 + 50, 200, 60)
 quit_btn = pygame.Rect(width//2 - 100, 450, 200, 60)
 back_btn = pygame.Rect(20, 20, 100, 40)
+credits_btn = pygame.Rect(width - 150, height - 80, 130, 50)
 
 play_btn = pygame.Rect(width//2 - 100, 350, 200, 60)
 mode_2p_btn = pygame.Rect(width//2 - 150, 250, 300, 60)
@@ -42,6 +43,7 @@ mode_ai_btn = pygame.Rect(width//2 - 150, 450, 300, 60)
 alapo = Game()
 select_piece = None # coords of a clicked piece
 valid_moves = [] # coords of moves selected piece can make
+last_move_pos = None # coords of last moved piece
 
 depth = 5
 strat = Strategy.IDSALLTABLES
@@ -61,11 +63,19 @@ def draw_board():
         for col in range(6):
             x = 200 + (col * 100)
             y = 100 + (row * 100)
-            color = 'light gray' if (row + col) % 2 == 0 else 'dark gray'
+            color = (145, 190, 218) if (row + col) % 2 == 0 else (241, 231, 221)
             pygame.draw.rect(screen, color, [x, y, 100, 100])
 
 # draw pieces:
 def draw_pieces(game_instance):
+    
+    if last_move_pos is not None:
+        lx, ly = last_move_pos
+        last_x = 200 + (lx*100)
+        last_y = 100 + (ly*100)
+        highlight_color = (75, 130, 148) if (ly + lx) % 2 == 0 else (161, 151, 141)
+        pygame.draw.rect(screen, highlight_color, [last_x, last_y, 100, 100])
+    
     for y in range(game_instance.board.size):
         for x in range(game_instance.board.size):
             piece = game_instance.board.get_piece(x, y)
@@ -78,7 +88,12 @@ def draw_pieces(game_instance):
             pixel_y = 100 + (y*100) + 50
 
             # piece color and size:
-            color = 'white' if piece.owner == Player.WHITE else 'black'
+            base_color = 'white' if piece.owner == Player.WHITE else 'black'
+            if select_piece == (x, y):
+                color = pygame.Color('yellow') if piece.owner == Player.WHITE else pygame.Color(50, 50, 200)
+            else:
+                color = base_color
+
             dim = 15 if piece.size == Size.SMALL else 25
 
             # draw shape:
@@ -105,10 +120,11 @@ def draw_moves():
         pygame.draw.circle(screen, 'red', (x, y), 10)
 
 def reset_game():
-    global alapo, select_piece, valid_moves
+    global alapo, select_piece, valid_moves, last_move_pos
     alapo = Game()
     select_piece = None
     valid_moves = []
+    last_move_pos = None
 
 def check_for_winner():
     global cur_state, winner_txt
@@ -149,6 +165,7 @@ while running:
 
             if ai_move is not None:
                 alapo.board.move_piece(ai_move)
+                last_move_pos = (ai_move.fx, ai_move.fy)
                 check_for_winner()
                 ai_move = None # Clear the move for the next turn
 
@@ -174,6 +191,8 @@ while running:
                     cur_state = "MODE"
                 elif quit_btn.collidepoint((mx, my)):
                     running = False
+                elif credits_btn.collidepoint((mx, my)):
+                    cur_state = "CREDITS"
 
             # mode select screen:
             elif cur_state == "MODE":
@@ -191,6 +210,10 @@ while running:
                     game_mode = 2
                     reset_game()
                     cur_state = "PLAYING"
+
+            elif cur_state == "CREDITS":
+                if back_btn.collidepoint((mx, my)):
+                    cur_state = "MENU"
             
             # game over screen:
             elif cur_state == "GAME_OVER":
@@ -209,6 +232,7 @@ while running:
                     for move in valid_moves:
                         if move.fx == x and move.fy == y:
                             alapo.board.move_piece(move)
+                            last_move_pos = (move.fx, move.fy)
 
                             # check if win:
                             check_for_winner()
@@ -227,16 +251,19 @@ while running:
                         if select_piece == (x, y):
                             select_piece = None
                             valid_moves = []
+                            last_move_pos = None
 
                         # select another piece:
                         elif piece and piece.owner == cur_player:
                             select_piece = (x, y)
                             valid_moves = piece.get_moves(alapo.board, x, y)
+                            last_move_pos = None
 
                         # clear select:    
                         else:
                             select_piece = None
                             valid_moves = []
+
 
 
     # rendering
@@ -261,10 +288,30 @@ while running:
         pygame.draw.rect(screen, (50, 20, 20), (quit_btn.x + shadow_offset, quit_btn.y + shadow_offset, quit_btn.width, quit_btn.height))
         pygame.draw.rect(screen, 'red', quit_btn)
 
+        pygame.draw.rect(screen, (50, 50, 50), (credits_btn.x + 3, credits_btn.y + 3, credits_btn.width, credits_btn.height))
+        pygame.draw.rect(screen, 'gray', credits_btn)
+
         play_txt = btn_font.render("Play", True, 'white')
         quit_txt = btn_font.render("Quit", True, 'white')
+        cred_txt = small_font.render("Credits", True, 'white')
         screen.blit(play_txt, (play_btn.centerx - play_txt.get_width()//2, play_btn.centery - play_txt.get_height()//2))
         screen.blit(quit_txt, (quit_btn.centerx - quit_txt.get_width()//2, quit_btn.centery - quit_txt.get_height()//2))
+        screen.blit(cred_txt, (credits_btn.centerx - cred_txt.get_width()//2, credits_btn.centery - cred_txt.get_height()//2))
+
+    elif cur_state == "CREDITS":
+
+        title_y = 200
+        line_spacing = 80
+        
+        header = font.render("This Project was made by:", True, 'black')
+        p1 = btn_font.render("Gabriel Cardoso Mota - up202306287", True, 'black')
+        p2 = btn_font.render("Sofia Sousa Furtado - up202305878", True, 'black')
+        p3 = btn_font.render("Tiago Alexandre de Boaventura Nunes - up202304047", True, 'black')
+
+        screen.blit(header, (width//2 - header.get_width()//2, title_y))
+        screen.blit(p1, (width//2 - p1.get_width()//2, title_y + 150))
+        screen.blit(p2, (width//2 - p2.get_width()//2, title_y + 150 + line_spacing))
+        screen.blit(p3, (width//2 - p3.get_width()//2, title_y + 150 + line_spacing * 2))
 
     elif cur_state == "MODE":
         title = font.render("SELECT MODE", True, 'black')
