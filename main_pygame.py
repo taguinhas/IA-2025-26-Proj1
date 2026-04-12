@@ -25,6 +25,7 @@ fps = 30
 font = pygame.font.SysFont(None, 80)
 btn_font = pygame.font.SysFont(None, 40)
 small_font = pygame.font.SysFont(None, 30)
+title_font = pygame.font.SysFont(None, 120)
 winner_txt = ""
 
 # buttons
@@ -46,12 +47,20 @@ depth = 5
 strat = Strategy.IDSALLTABLES
 ai_player = MinimaxPlayer("HumanDestroyer9000", evaluate_board, depth, strat)
 
+# images:
+menu_img = pygame.image.load("assets/background.jpg").convert()
+menu_img = pygame.transform.scale(menu_img, (width, height))
+
+title_img = pygame.image.load("assets/ALAPO.png").convert()
+title_img.set_colorkey(title_img.get_at((0,0))) # removes background around title
+title_img = pygame.transform.smoothscale(title_img, (500, 500))
+
 # draw board:
 def draw_board():
      for row in range(6):
         for col in range(6):
             x = 200 + (col * 100)
-            y = row * 100
+            y = 100 + (row * 100)
             color = 'light gray' if (row + col) % 2 == 0 else 'dark gray'
             pygame.draw.rect(screen, color, [x, y, 100, 100])
 
@@ -66,7 +75,7 @@ def draw_pieces(game_instance):
             
             # place piece in the center of a square:
             pixel_x = 200 + (x*100) + 50
-            pixel_y = (y*100) + 50
+            pixel_y = 100 + (y*100) + 50
 
             # piece color and size:
             color = 'white' if piece.owner == Player.WHITE else 'black'
@@ -92,7 +101,7 @@ def draw_pieces(game_instance):
 def draw_moves():
     for move in valid_moves:
         x = 200+(move.fx*100)+50
-        y = (move.fy*100)+50
+        y = 100+(move.fy*100)+50
         pygame.draw.circle(screen, 'red', (x, y), 10)
 
 def reset_game():
@@ -192,7 +201,7 @@ while running:
             # playing screen (board):
             elif cur_state == "PLAYING":
                 x = (event.pos[0] - 200) // 100
-                y = event.pos[1] // 100
+                y = (event.pos[1] - 100)// 100
 
                 #check if click is within the board:
                 if 0 <= x < 6 and 0 <= y <6:
@@ -231,19 +240,26 @@ while running:
 
 
     # rendering
-    screen.fill('gray')
+    screen.blit(menu_img, (0,0))
+    shadow_offset = 5
     
     if cur_state != "MENU":
         pygame.draw.rect(screen, 'dark gray', back_btn, border_radius=5)
         back_txt = small_font.render("Back", True, 'black')
+        
         screen.blit(back_txt, (back_btn.centerx - back_txt.get_width()//2, back_btn.centery - back_txt.get_height()//2))
 
     if cur_state == "MENU":
-        title = font.render("ALAPO", True, 'black')
-        screen.blit(title, (width//2 - title.get_width()//2, 150))
+        # title = title_font.render("ALAPO", True, 'black')
+        screen.blit(title_img, (width//2 - title_img.get_width()//2, -50))
 
-        pygame.draw.rect(screen, 'darkgreen', play_btn)
-        pygame.draw.rect(screen, 'darkred', quit_btn)
+
+        # buttons:
+        pygame.draw.rect(screen, (20, 50, 20), (play_btn.x + shadow_offset, play_btn.y + shadow_offset, play_btn.width, play_btn.height))
+        pygame.draw.rect(screen, 'green', play_btn)
+
+        pygame.draw.rect(screen, (50, 20, 20), (quit_btn.x + shadow_offset, quit_btn.y + shadow_offset, quit_btn.width, quit_btn.height))
+        pygame.draw.rect(screen, 'red', quit_btn)
 
         play_txt = btn_font.render("Play", True, 'white')
         quit_txt = btn_font.render("Quit", True, 'white')
@@ -253,9 +269,14 @@ while running:
     elif cur_state == "MODE":
         title = font.render("SELECT MODE", True, 'black')
         screen.blit(title, (width//2 - title.get_width()//2, 120))
-
+        
+        pygame.draw.rect(screen, (20, 50, 20), (mode_2p_btn.x + shadow_offset, mode_2p_btn.y + shadow_offset, mode_2p_btn.width, mode_2p_btn.height))
         pygame.draw.rect(screen, 'dark blue', mode_2p_btn)
+
+        pygame.draw.rect(screen, (20, 50, 20), (mode_1p_btn.x + shadow_offset, mode_1p_btn.y + shadow_offset, mode_1p_btn.width, mode_1p_btn.height))
         pygame.draw.rect(screen, 'dark blue', mode_1p_btn)
+
+        pygame.draw.rect(screen, (20, 50, 20), (mode_ai_btn.x + shadow_offset, mode_ai_btn.y + shadow_offset, mode_ai_btn.width, mode_ai_btn.height))
         pygame.draw.rect(screen, 'dark blue', mode_ai_btn)
 
         txt_2p = btn_font.render("Human vs Human", True, 'white')
