@@ -2,7 +2,7 @@
 import pygame
 from game.game import Game
 from game.piece import Piece, Player, Shape, Size
-from utils.heuristics import evaluate_board
+from utils.heuristics import evaluate_board, heuristic_weights
 
 import threading
 
@@ -21,7 +21,7 @@ width = 1000
 height = 800
 screen = pygame.display.set_mode((width, height))
 pygame.display.set_caption('Alapo')
-cur_state = "MENU" # MENU, MODE, PLAYING, GAME_OVER, CREDITS
+cur_state = "MENU" # MENU, MODE, PLAYING, GAME_OVER, CREDITS, DIFFICULTY
 game_mode = 0 # 0: PVP, 1: P vs AI, 2: AI vs AI  
 clock = pygame.time.Clock()
 fps = 30
@@ -44,6 +44,10 @@ mode_2p_btn = pygame.Rect(width//2 - 150, 250, 300, 60)
 mode_1p_btn = pygame.Rect(width//2 - 150, 350, 300, 60)
 mode_ai_btn = pygame.Rect(width//2 - 150, 450, 300, 60)
 
+easy_btn = pygame.Rect(width//2 - 150, 250, 300, 60)
+medium_btn = pygame.Rect(width//2 - 150, 350, 300, 60)
+hard_btn = pygame.Rect(width//2 - 150, 450, 300, 60)
+
 # initialize game and states
 alapo = Game()
 select_piece = None # coords of a clicked piece
@@ -52,7 +56,9 @@ last_move_pos = None # coords of last moved piece
 
 depth = 5
 strat = Strategy.IDSALLTABLES
-ai_player = MinimaxPlayer("HumanDestroyer9000", evaluate_board, depth, strat)
+heuri = heuristic_weights.ADJUSTED_WEIGHTS
+ai_player = MinimaxPlayer("HumanDestroyer9000", evaluate_board, depth, strat, heuri)
+ai_difficulty = "HARD"
 
 # images:
 menu_img = pygame.image.load("assets/background.jpg").convert()
@@ -125,11 +131,18 @@ def draw_moves():
         pygame.draw.circle(screen, 'red', (x, y), 10)
 
 def reset_game():
-    global alapo, select_piece, valid_moves, last_move_pos
+    global alapo, select_piece, valid_moves, last_move_pos, ai_player, ai_difficulty
     alapo = Game()
     select_piece = None
     valid_moves = []
     last_move_pos = None
+    match ai_difficulty:
+        case "EASY":
+            ai_player = MinimaxPlayer("EasyIA", evaluate_board, 1, strat, heuristic_weights.BALANCED_WEIGHTS)
+        case "MEDIUM":
+            ai_player = MinimaxPlayer("MediumIA", evaluate_board, 3, strat, heuri)
+        case "HARD":
+            ai_player = MinimaxPlayer("HumanDestroyer9000", evaluate_board, depth, strat, heuri)
 
 def check_for_winner():
     global cur_state, winner_txt
@@ -212,11 +225,26 @@ while running:
 
                 elif mode_1p_btn.collidepoint((mx, my)):
                     game_mode = 1
-                    reset_game()
-                    cur_state = "PLAYING"
+                    cur_state = "DIFFICULTY"
 
                 elif mode_ai_btn.collidepoint((mx, my)):
                     game_mode = 2
+                    reset_game()
+                    cur_state = "PLAYING"
+
+            elif cur_state == "DIFFICULTY":
+                if easy_btn.collidepoint((mx, my)):
+                    ai_difficulty = "EASY"
+                    reset_game()
+                    cur_state = "PLAYING"
+                
+                elif medium_btn.collidepoint((mx, my)):
+                    ai_difficulty = "MEDIUM"
+                    reset_game()
+                    cur_state = "PLAYING"
+
+                elif hard_btn.collidepoint((mx, my)):
+                    ai_difficulty = "HARD"
                     reset_game()
                     cur_state = "PLAYING"
 
@@ -346,6 +374,28 @@ while running:
         screen.blit(txt_2p, (mode_2p_btn.centerx - txt_2p.get_width()//2, mode_2p_btn.centery - txt_2p.get_height()//2))
         screen.blit(txt_1p, (mode_1p_btn.centerx - txt_1p.get_width()//2, mode_1p_btn.centery - txt_1p.get_height()//2))
         screen.blit(txt_ai, (mode_ai_btn.centerx - txt_ai.get_width()//2, mode_ai_btn.centery - txt_ai.get_height()//2))
+
+    elif cur_state == "DIFFICULTY":
+        title = font.render("SELECT DIFFICULTY", True, "black")
+        screen.blit(title, (width//2 - title.get_width()//2, 120))
+
+        pygame.draw.rect(screen, (20, 50, 20), (easy_btn.x + shadow_offset, easy_btn.y + shadow_offset, easy_btn.width, easy_btn.height))
+        pygame.draw.rect(screen, 'dark blue', easy_btn)
+
+        pygame.draw.rect(screen, (20, 50, 20), (medium_btn.x + shadow_offset, medium_btn.y + shadow_offset, medium_btn.width, medium_btn.height))
+        pygame.draw.rect(screen, 'dark blue', medium_btn)
+
+        pygame.draw.rect(screen, (20, 50, 20), (hard_btn.x + shadow_offset, hard_btn.y + shadow_offset, hard_btn.width, hard_btn.height))
+        pygame.draw.rect(screen, 'dark blue', hard_btn)
+
+        txt_easy = btn_font.render("Easy", True, 'white')
+        txt_mid = btn_font.render("Medium", True, 'white')
+        txt_hard = btn_font.render("Hard", True, 'white')
+
+        screen.blit(txt_easy, (easy_btn.centerx - txt_easy.get_width()//2, easy_btn.centery - txt_easy.get_height()//2))
+        screen.blit(txt_mid, (medium_btn.centerx - txt_mid.get_width()//2, medium_btn.centery - txt_mid.get_height()//2))
+        screen.blit(txt_hard, (hard_btn.centerx - txt_hard.get_width()//2, hard_btn.centery - txt_hard.get_height()//2))
+
 
     elif cur_state == "PLAYING" or cur_state == "GAME_OVER":
         draw_board()
