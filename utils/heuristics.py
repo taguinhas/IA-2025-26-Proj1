@@ -2,6 +2,7 @@ from game.game import Game
 from game.board import Board
 from game.piece import Shape, Size, Player, Piece
 
+from enum import Enum
 shapeFactors = {
         Shape.TRIANGLE:1, 
         Shape.SQUARE:2, 
@@ -40,34 +41,22 @@ defensivecontrolTable = [
 
 #all the following weights are pretty similar when paired against each other
 #weights we gave "blindly"
-WEIGHTS = {
-    "Material": 100,
-    "Safety": 40,
-    "Position": 20,
-    "Control": 10, 
-    "Activity": 0,
+
+class heuristic_weights(Enum):
+    BALANCED_WEIGHTS = 0
+    TRAINING_WEIGHTS = 1
+    ADJUSTED_WEIGHTS = 2
+
+heuristic_dict = {
+    heuristic_weights.BALANCED_WEIGHTS: { "Material": 100, "Safety": 40, "Position": 20, "Control": 10, "Activity": 0,},
+    heuristic_weights.TRAINING_WEIGHTS: { "Material": 194, "Safety": 33, "Position": 1, "Control": 7},
+    heuristic_weights.ADJUSTED_WEIGHTS: { "Material": 180, "Safety": 45, "Position": 15, "Control": 8}
 }
 
-#weights of the player from gen 59
-training_weights = {
-    "Material": 194,
-    "Safety": 33,
-    "Position": 1,
-    "Control": 7
-}
-
-#weights after some human consideration
-adjusted_weights = {
-    "Material": 180,
-    "Safety": 45,
-    "Position": 15,
-    "Control": 8
-}
-
-def evaluate_board(board: Board, depth, weights = adjusted_weights):
+def evaluate_board(board: Board, depth, heuristics:heuristic_weights = heuristic_weights.ADJUSTED_WEIGHTS):
     """given a board gives an heuristic evaluation"""
     #all our heuristics follow the position rating used on chess. positive heuristics favor white, negative favor black
-
+    weights = heuristic_dict[heuristics]
     #terminal check, don't want other heuristics to cause the ai to choose a slower win
     winner = board.check_winner()
     if winner == Player.WHITE:

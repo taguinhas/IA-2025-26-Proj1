@@ -2,7 +2,7 @@ from players.genericPlayer import genericPlayer
 from game.game import Game
 from game.board import Board
 from game.piece import Move, Player
-from utils.heuristics import shapeFactors
+from utils.heuristics import shapeFactors, heuristic_weights
 from enum import Enum
 
 """
@@ -32,12 +32,13 @@ class MinimaxPlayer(genericPlayer):
         "CO": 10000, 
         "CAP": 20000    
     }
-    def __init__(self, name, eval_func, depth, strategy:Strategy = Strategy.IDSALLTABLES):
+    def __init__(self, name, eval_func, depth, strategy:Strategy = Strategy.IDSALLTABLES, heuristics:heuristic_weights = heuristic_weights.ADJUSTED_WEIGHTS):
         super().__init__(name)          # pass name to base
         #for heuristics check "utils/heuristics.py"
         self.eval_func = eval_func
         self.depth = depth
         self.strategy = strategy
+        self.heuristics = heuristics
 
         self.transposition_table = {}
         self.cutoff_moves = {}
@@ -110,13 +111,13 @@ class MinimaxPlayer(genericPlayer):
         if winner == Player.BLACK:
             return -1000000 - depth, None
         if depth == 0:
-            return self.eval_func(board, depth), None
+            return self.eval_func(board, depth, self.heuristics), None
         
         #get moves
         moves = board.available_moves(player)
         if not moves:
             #this should never happen. Unlike chess there are no "illegal" moves 
-            return self.eval_func(board, depth), None
+            return self.eval_func(board, depth, self.heuristics), None
         
         #sort moves by their predicted quality. usefull for better pruning
         moves.sort(key=lambda m: self._score_move(board, m, depth, tt_move), reverse=True)

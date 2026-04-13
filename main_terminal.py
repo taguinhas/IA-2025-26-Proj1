@@ -1,7 +1,7 @@
 from game.game import Game
 from game.board import Board, InvalidMoveError
 from game.piece import Piece, Player, Size, Shape
-from utils.heuristics import evaluate_board
+from utils.heuristics import evaluate_board, heuristic_weights
 
 from players.humanPlayer import HumanPlayer
 from players.minimaxPlayer import MinimaxPlayer, Strategy
@@ -22,6 +22,7 @@ black_player = HumanPlayer("Lowlier human")
 
 depth = 5
 strat = Strategy.IDSALLTABLES
+heuristics = heuristic_weights.BALANCED_WEIGHTS
 while True:
     print("Choose game type:")
     for key, value in modes.items():
@@ -38,15 +39,15 @@ while True:
             color = int(input())
             if color == 0:
                 white_player = HumanPlayer("Lowly human")
-                black_player = MinimaxPlayer("HumanDestroyer9000", evaluate_board, depth, strat)
+                black_player = MinimaxPlayer("HumanDestroyer9000", evaluate_board, depth, strat, heuristics)
             else:
                 black_player = HumanPlayer("Lowly human")
-                white_player = MinimaxPlayer("HumanDestroyer9000", evaluate_board, depth, strat)
+                white_player = MinimaxPlayer("HumanDestroyer9000", evaluate_board, depth, strat, heuristics)
             break
 
         case 2:
-            white_player = MinimaxPlayer("HumanDestroyer9000", evaluate_board, depth, strat)
-            black_player = MinimaxPlayer("HumanDecimator9000", evaluate_board, depth, strat)
+            white_player = MinimaxPlayer("HumanDestroyer9000", evaluate_board, depth, strat, heuristics)
+            black_player = MinimaxPlayer("HumanDecimator9000", evaluate_board, depth, strat, heuristics)
             break
 move_count = 0
 while(True):
