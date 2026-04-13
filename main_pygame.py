@@ -2,7 +2,7 @@
 import pygame
 from game.game import Game
 from game.piece import Piece, Player, Shape, Size
-from utils.heuristics import evaluate_board
+from utils.heuristics import evaluate_board, heuristic_weights
 
 import threading
 
@@ -50,9 +50,27 @@ select_piece = None # coords of a clicked piece
 valid_moves = [] # coords of moves selected piece can make
 last_move_pos = None # coords of last moved piece
 
+#stupid
+"""
+depth = 1
+strat = Strategy.IDSALLTABLES
+heuristics = heuristic_weights.FLAT_WEIGHTS
+"""
+
+#medium
+"""
+depth = 2
+strat = Strategy.IDSALLTABLES
+heuristics = heuristic_weights.FLAT_WEIGHTS
+"""
+
+#hard
+""""""
 depth = 5
 strat = Strategy.IDSALLTABLES
-ai_player = MinimaxPlayer("HumanDestroyer9000", evaluate_board, depth, strat)
+heuristics = heuristic_weights.ADJUSTED_WEIGHTS
+
+ai_player = MinimaxPlayer("HumanDestroyer9000", evaluate_board, depth, strat, heuristics)
 
 # images:
 menu_img = pygame.image.load("assets/background.jpg").convert()

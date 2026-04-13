@@ -7,6 +7,7 @@ class Game:
         """
         self.board = Board(6, Player.WHITE)
         self.populate_board()
+        self.move_count = 0
 
     def populate_board(self):
         """Populates board with alapo's initial board state"""
@@ -75,3 +76,22 @@ class Game:
                 self.board.place_piece(piece, x, y)
 
         self.board.hash_board()
+    
+    def write_stats(self, winner, white, black, white_ai:bool, black_ai:bool, white_times:list, black_times:list, output_file = "stats.txt"):
+        """prints stats to output_file, must provide: winning player, white player, black player, booleans indicating if the player is AI"""
+        with open(output_file, "a") as f:
+            if winner is not None:
+                f.write(f"{'White' if winner == Player.WHITE else 'Black'} won\n")
+            else:
+                f.write("Game ended in a tie\n")
+            f.write(f"Game ended in {self.move_count} moves\n")
+            if(white_ai):
+                f.write("White stats:\n")
+                f.write(f"Nodes explored: {white.total_nodes}\n")
+                f.write(f"TT hits: {white.total_table_hits} | Killer move hits: {white.cutoff_moves}\n")
+                f.write(f"Average time per move: {sum(white_times)/len(white_times)}\n")
+            if(black_ai):
+                f.write("Black stats:\n")
+                f.write(f"Nodes explored: {black.total_nodes}\n")
+                f.write(f"TT hits: {black.total_table_hits} | Killer move hits: {black.cutoff_moves}\n")
+                f.write(f"Average time per move: {sum(black_times)/len(black_times)}\n")
