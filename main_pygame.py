@@ -22,7 +22,7 @@ width = 1000
 height = 800
 screen = pygame.display.set_mode((width, height))
 pygame.display.set_caption('Alapo')
-cur_state = "MENU" # MENU, MODE, PLAYING, GAME_OVER, CREDITS, DIFFICULTY
+cur_state = "MENU" # MENU, MODE, PLAYING, GAME_OVER, CREDITS, DIFFICULTY, STRATEGY
 game_mode = 0 # 0: PVP, 1: P vs AI, 2: AI vs AI  
 clock = pygame.time.Clock()
 fps = 30
@@ -49,6 +49,14 @@ easy_btn = pygame.Rect(width//2 - 150, 250, 300, 60)
 medium_btn = pygame.Rect(width//2 - 150, 350, 300, 60)
 hard_btn = pygame.Rect(width//2 - 150, 450, 300, 60)
 
+ab_btn = pygame.Rect(width//2 - 150, 200, 300, 50)
+ab_table_btn = pygame.Rect(width//2 - 150, 270, 300, 50)
+ids_btn = pygame.Rect(width//2 - 150, 340, 300, 50)
+ids_all_btn = pygame.Rect(width//2 - 150, 410, 300, 50)
+
+hint_btn = pygame.Rect(width - 150, 20, 130, 40)
+hint_thinking = False
+
 # initialize game and states
 alapo = Game()
 select_piece = None # coords of a clicked piece
@@ -57,8 +65,13 @@ last_move_pos = None # coords of last moved piece
 
 depth = 5
 strat = Strategy.IDSALLTABLES
+heuri = heuristic_weights.ADJUSTED_WEIGHTS
 ai_difficulty = "HARD"
-ai_player = MinimaxPlayer("HumanDestroyer9000", evaluate_board, depth, strat)
+
+configuring_for = Player.BLACK
+ai_player_white = None
+ai_player_black = None
+ai_player = None
 
 # images:
 menu_img = pygame.image.load("assets/background.jpg").convert()
@@ -130,19 +143,26 @@ def draw_moves():
         y = 100+(move.fy*100)+50
         pygame.draw.circle(screen, 'red', (x, y), 10)
 
+def create_ai_player(name, difficulty, strategy_enum):
+    # Map difficulty to depth/heuristics
+    if difficulty == "EASY":
+        depth = 1
+        heur = heuristic_weights.FLAT_WEIGHTS 
+    elif difficulty == "MEDIUM":
+        depth = 3
+        heur = heuristic_weights.BALANCED_WEIGHTS
+    elif difficulty == "HARD":
+        depth = 5
+        heur = heuristic_weights.ADJUSTED_WEIGHTS
+    
+    return MinimaxPlayer(name, evaluate_board, depth, strategy_enum, heur)
+
 def reset_game():
-    global alapo, select_piece, valid_moves, last_move_pos, ai_player, ai_difficulty
+    global alapo, select_piece, valid_moves, last_move_pos
     alapo = Game()
     select_piece = None
     valid_moves = []
     last_move_pos = None
-    match ai_difficulty:
-        case "EASY":
-            ai_player = MinimaxPlayer("EasyIA", evaluate_board, 1, strat, heuristic_weights.FLAT_WEIGHTS)
-        case "MEDIUM":
-            ai_player = MinimaxPlayer("MediumIA", evaluate_board, 2, strat, heuristic_weights.BALANCED_WEIGHTS)
-        case "HARD":
-            ai_player = MinimaxPlayer("HumanDestroyer9000", evaluate_board, depth, strat, heuristic_weights.ADJUSTED_WEIGHTS)
 
 def check_for_winner():
     global cur_state, winner_txt
@@ -163,21 +183,21 @@ while running:
     cur_player = alapo.board.get_cur_player()
 
     if cur_state == "PLAYING":
-        is_ai_turn = False # Meto falso por default
+        active_ai = None
         if game_mode == 1 and cur_player == Player.BLACK:
-            is_ai_turn = True # Human Vs. AI, assumo player branco AI preto
+            active_ai = ai_player
         elif game_mode == 2:
-            is_ai_turn = True # Sempre AI lmao
+            active_ai = ai_player_white if cur_player == Player.WHITE else ai_player_black
 
-        if is_ai_turn:
+        if active_ai:
             if not ai_thinking:
-                def fetch_ai_move(current_game):
+                def fetch_ai_move(current_game, p):
                     global ai_move, ai_thinking
-                    ai_move = ai_player.get_player_move(current_game)
+                    ai_move = p.get_player_move(current_game)
                     ai_thinking = False
 
                 ai_thinking = True
-                thread = threading.Thread(target=fetch_ai_move, args=(alapo,))
+                thread = threading.Thread(target=fetch_ai_move, args=(alapo, active_ai))
                 thread.daemon = True # Thread dies if the main program closes
                 thread.start()
 
@@ -225,28 +245,58 @@ while running:
 
                 elif mode_1p_btn.collidepoint((mx, my)):
                     game_mode = 1
+                    configuring_for = Player.BLACK
                     cur_state = "DIFFICULTY"
 
                 elif mode_ai_btn.collidepoint((mx, my)):
                     game_mode = 2
-                    reset_game()
-                    cur_state = "PLAYING"
+                    configuring_for = Player.WHITE
+                    cur_state = "DIFFICULTY"
 
             elif cur_state == "DIFFICULTY":
                 if easy_btn.collidepoint((mx, my)):
                     ai_difficulty = "EASY"
-                    reset_game()
-                    cur_state = "PLAYING"
                 
                 elif medium_btn.collidepoint((mx, my)):
                     ai_difficulty = "MEDIUM"
-                    reset_game()
-                    cur_state = "PLAYING"
 
                 elif hard_btn.collidepoint((mx, my)):
                     ai_difficulty = "HARD"
-                    reset_game()
-                    cur_state = "PLAYING"
+                
+                current_temp_diff = ai_difficulty
+                cur_state = "STRATEGY"
+
+
+            elif cur_state == "STRATEGY":
+                strat = None
+                if ab_btn.collidepoint((mx, my)): 
+                    strat = Strategy.ABPRUNING
+
+                elif ab_table_btn.collidepoint((mx, my)): 
+                    strat = Strategy.ABTABLE
+
+                elif ids_btn.collidepoint((mx, my)): 
+                    strat = Strategy.IDS
+
+                elif ids_all_btn.collidepoint((mx, my)): 
+                    strat = Strategy.IDSALLTABLES
+
+                if strat is not None:
+                    new_ai = create_ai_player("AI", current_temp_diff, strat)
+                    
+                    if game_mode == 1:
+                        ai_player = new_ai
+                        reset_game()
+                        cur_state = "PLAYING"
+                    else: 
+                        if configuring_for == Player.WHITE:
+                            ai_player_white = new_ai
+                            configuring_for = Player.BLACK
+                            cur_state = "DIFFICULTY"
+                        else:
+                            ai_player_black = new_ai
+                            reset_game()
+                            cur_state = "PLAYING"
 
             elif cur_state == "CREDITS":
                 if back_btn.collidepoint((mx, my)):
@@ -260,6 +310,33 @@ while running:
 
             # playing screen (board):
             elif cur_state == "PLAYING":
+
+                mx, my = event.pos    
+                if hint_btn.collidepoint((mx, my)) and not hint_thinking and not ai_thinking:
+                    if (game_mode == 0) or (game_mode == 1 and alapo.board.get_cur_player() == Player.WHITE):
+
+                        hint_thinking = True
+                        
+                        def hint_move(current_game):
+                            global hint_thinking, last_move_pos, select_piece, valid_moves
+                            hint_ai = MinimaxPlayer("HintBot", evaluate_board, 5, Strategy.IDSALLTABLES)
+                            best_move = hint_ai.get_player_move(current_game)
+
+                            if best_move:
+                                if current_game.board.get_piece(best_move.fx, best_move.fy) is not None:
+                                    capture_sound.play()
+                                else:
+                                    move_sound.play()
+                                current_game.board.move_piece(best_move)
+                                last_move_pos = (best_move.fx, best_move.fy)
+
+                                check_for_winner()
+                                select_piece = None
+                                valid_moves = []
+
+                            hint_thinking = False
+                        threading.Thread(target=hint_move, args=(alapo,), daemon=True).start()
+                
                 x = (event.pos[0] - 200) // 100
                 y = (event.pos[1] - 100)// 100
 
@@ -376,7 +453,7 @@ while running:
         screen.blit(txt_ai, (mode_ai_btn.centerx - txt_ai.get_width()//2, mode_ai_btn.centery - txt_ai.get_height()//2))
 
     elif cur_state == "DIFFICULTY":
-        title = font.render("SELECT DIFFICULTY", True, "black")
+        title = font.render("Select Difficulty for " + ("White AI" if configuring_for == Player.WHITE else "Black AI"), True, "black")
         screen.blit(title, (width//2 - title.get_width()//2, 120))
 
         pygame.draw.rect(screen, (20, 50, 20), (easy_btn.x + shadow_offset, easy_btn.y + shadow_offset, easy_btn.width, easy_btn.height))
@@ -396,24 +473,52 @@ while running:
         screen.blit(txt_mid, (medium_btn.centerx - txt_mid.get_width()//2, medium_btn.centery - txt_mid.get_height()//2))
         screen.blit(txt_hard, (hard_btn.centerx - txt_hard.get_width()//2, hard_btn.centery - txt_hard.get_height()//2))
 
+    elif cur_state == "STRATEGY":
+        title = font.render("Select Strategy for " + ("White AI" if configuring_for == Player.WHITE else "Black AI"), True, "black")
+        screen.blit(title, (width//2 - title.get_width()//2, 100))
 
-    elif cur_state == "PLAYING" or cur_state == "GAME_OVER":
+        strats = [
+            (ab_btn, "Alpha-Beta"),
+            (ab_table_btn, "AB + Transposition"),
+            (ids_btn, "Iterative Deepening"),
+            (ids_all_btn, "IDS + All Tables")
+        ]
+
+        for btn, label in strats:
+            pygame.draw.rect(screen, (20, 50, 20), (btn.x + 5, btn.y + 5, btn.width, btn.height))
+            pygame.draw.rect(screen, 'dark blue', btn)
+            txt = btn_font.render(label, True, 'white')
+            screen.blit(txt, (btn.centerx - txt.get_width()//2, btn.centery - txt.get_height()//2))
+
+
+    if cur_state == "PLAYING":
         draw_board()
         draw_pieces(alapo)
         draw_moves()
 
-        if cur_state == "GAME_OVER":
-            overlay = pygame.Surface((width, height), pygame.SRCALPHA)
-            overlay.fill((0, 0, 0, 180))
-            screen.blit(overlay, (0, 0))
-            
-            text_surface = font.render(winner_txt, True, 'white')
-            text_rect = text_surface.get_rect(center=(width//2, height//2 - 50))
-            screen.blit(text_surface, text_rect)
+        if game_mode != 2:
+            pygame.draw.rect(screen, 'gold', hint_btn, border_radius=5)
+            hint_text = "Thinking..." if hint_thinking else "Hint"
+            hint_txt_surf = small_font.render(hint_text, True, 'black')
+            screen.blit(hint_txt_surf, (hint_btn.centerx - hint_txt_surf.get_width()//2, hint_btn.centery - hint_txt_surf.get_height()//2))
 
-            pygame.draw.rect(screen, 'dodgerblue', menu_btn)
-            menu_txt = btn_font.render("Main Menu", True, 'white')
-            screen.blit(menu_txt, (menu_btn.centerx - menu_txt.get_width()//2, menu_btn.centery - menu_txt.get_height()//2))
+
+    elif cur_state == "GAME_OVER":
+        draw_board()
+        draw_pieces(alapo)
+        draw_moves()
+
+        overlay = pygame.Surface((width, height), pygame.SRCALPHA)
+        overlay.fill((0, 0, 0, 180))
+        screen.blit(overlay, (0, 0))
+        
+        text_surface = font.render(winner_txt, True, 'white')
+        text_rect = text_surface.get_rect(center=(width//2, height//2 - 50))
+        screen.blit(text_surface, text_rect)
+
+        pygame.draw.rect(screen, 'dodgerblue', menu_btn)
+        menu_txt = btn_font.render("Main Menu", True, 'white')
+        screen.blit(menu_txt, (menu_btn.centerx - menu_txt.get_width()//2, menu_btn.centery - menu_txt.get_height()//2))
 
     # flip() the display to put work on screen
     pygame.display.flip()
