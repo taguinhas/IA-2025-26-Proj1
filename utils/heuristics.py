@@ -46,11 +46,13 @@ class heuristic_weights(Enum):
     BALANCED_WEIGHTS = 0
     TRAINING_WEIGHTS = 1
     ADJUSTED_WEIGHTS = 2
+    FLAT_WEIGHTS = 3
 
 heuristic_dict = {
     heuristic_weights.BALANCED_WEIGHTS: { "Material": 100, "Safety": 40, "Position": 20, "Control": 10, "Activity": 0,},
     heuristic_weights.TRAINING_WEIGHTS: { "Material": 194, "Safety": 33, "Position": 1, "Control": 7},
-    heuristic_weights.ADJUSTED_WEIGHTS: { "Material": 180, "Safety": 45, "Position": 15, "Control": 8}
+    heuristic_weights.ADJUSTED_WEIGHTS: { "Material": 180, "Safety": 45, "Position": 15, "Control": 8},
+    heuristic_weights.FLAT_WEIGHTS: { "Material": 1, "Safety": 1, "Position": 1, "Control": 1}
 }
 
 def evaluate_board(board: Board, depth, heuristics:heuristic_weights = heuristic_weights.ADJUSTED_WEIGHTS):

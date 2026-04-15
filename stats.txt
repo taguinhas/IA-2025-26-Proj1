@@ -1,0 +1,9 @@
+White won
+Game ended in 45 moves
+White stats:
+Nodes explored: 1150841
+TT hits: 18847 | Killer move hits: {1: Move(ix=5, iy=5, fx=5, fy=0), 2: Move(ix=5, iy=0, fx=5, fy=5), 3: Move(ix=1, iy=2, fx=2, fy=1), 4: Move(ix=3, iy=3, fx=4, fy=4)}
+Average time per move: 6.4400032395901885White stats:
+Nodes explored: 760739
+TT hits: 18099 | Killer move hits: {1: Move(ix=5, iy=5, fx=5, fy=0), 2: Move(ix=1, iy=0, fx=0, fy=0), 3: Move(ix=3, iy=3, fx=4, fy=2), 4: Move(ix=5, iy=3, fx=5, fy=1)}
+Average time per move: 4.5296208316629585

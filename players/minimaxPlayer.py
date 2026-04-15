@@ -49,6 +49,10 @@ class MinimaxPlayer(genericPlayer):
         self.table_hits = 0 
         self.nodes = 0
         self.cutoffs = 0
+
+        self.total_table_hits = 0 
+        self.total_nodes = 0
+        self.total_cutoffs = 0
     
     def get_player_move(self, game:Game):
         """Find the best move using the Minimax alpha-beta algorithm"""
@@ -78,7 +82,10 @@ class MinimaxPlayer(genericPlayer):
             #standard AB or AB with Table
             _, best_move = self._search(board, self.depth, float('-inf'), float('inf'), player)
         #print(f"TT Hits: {self.table_hits} | Cutoffs: {self.cutoffs}")
-        
+        self.total_table_hits += self.table_hits
+        self.total_nodes += self.nodes 
+        self.total_cutoffs += self.cutoffs 
+
         return best_move
     
     def _search(self, board:Board, depth, alpha, beta, player):
