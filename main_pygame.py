@@ -55,24 +55,9 @@ select_piece = None # coords of a clicked piece
 valid_moves = [] # coords of moves selected piece can make
 last_move_pos = None # coords of last moved piece
 
-#stupid
-"""
-depth = 1
-strat = Strategy.IDSALLTABLES
-heuristics = heuristic_weights.FLAT_WEIGHTS
-"""
-
-#medium
-"""
-depth = 2
-strat = Strategy.IDSALLTABLES
-heuristics = heuristic_weights.FLAT_WEIGHTS
-"""
-
-#hard
-""""""
 depth = 5
 strat = Strategy.IDSALLTABLES
+ai_difficulty = "HARD"
 ai_player = MinimaxPlayer("HumanDestroyer9000", evaluate_board, depth, strat)
 
 # images:
@@ -153,11 +138,11 @@ def reset_game():
     last_move_pos = None
     match ai_difficulty:
         case "EASY":
-            ai_player = MinimaxPlayer("EasyIA", evaluate_board, 1, strat, heuristic_weights.BALANCED_WEIGHTS)
+            ai_player = MinimaxPlayer("EasyIA", evaluate_board, 1, strat, heuristic_weights.FLAT_WEIGHTS)
         case "MEDIUM":
-            ai_player = MinimaxPlayer("MediumIA", evaluate_board, 3, strat, heuri)
+            ai_player = MinimaxPlayer("MediumIA", evaluate_board, 2, strat, heuristic_weights.BALANCED_WEIGHTS)
         case "HARD":
-            ai_player = MinimaxPlayer("HumanDestroyer9000", evaluate_board, depth, strat, heuri)
+            ai_player = MinimaxPlayer("HumanDestroyer9000", evaluate_board, depth, strat, heuristic_weights.ADJUSTED_WEIGHTS)
 
 def check_for_winner():
     global cur_state, winner_txt

@@ -55,7 +55,7 @@ heuristic_dict = {
     heuristic_weights.FLAT_WEIGHTS: { "Material": 1, "Safety": 1, "Position": 1, "Control": 1}
 }
 
-def evaluate_board(board: Board, depth, heuristics:heuristic_weights = heuristic_weights.ADJUSTED_WEIGHTS):
+def evaluate_board(board: Board, depth,cur_player:Player, heuristics:heuristic_weights = heuristic_weights.ADJUSTED_WEIGHTS):
     """given a board gives an heuristic evaluation"""
     #all our heuristics follow the position rating used on chess. positive heuristics favor white, negative favor black
     weights = heuristic_dict[heuristics]
@@ -86,9 +86,9 @@ def evaluate_board(board: Board, depth, heuristics:heuristic_weights = heuristic
     #possibly covered by the win condition and depth?
     control_score = control_eval_board(white_attacks, black_attacks, defensivecontrolTable)
 
+    p_factor = 1 if cur_player == Player.WHITE else -1
     key = board.current_hash
-    #only 1 player needs to be disencouraged form repeating moves
-    repetition_penalty = (0 - board.history.get(key, 0) ** 2)*5
+    repetition_penalty = (0 - board.history.get(key, 0) ** 2)*5 * p_factor
 
     total_score = ( 0
         + weights["Material"] * material_score

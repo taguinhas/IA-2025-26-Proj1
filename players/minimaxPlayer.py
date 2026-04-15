@@ -118,13 +118,13 @@ class MinimaxPlayer(genericPlayer):
         if winner == Player.BLACK:
             return -1000000 - depth, None
         if depth == 0:
-            return self.eval_func(board, depth, self.heuristics), None
+            return self.eval_func(board, depth, player, self.heuristics), None
         
         #get moves
         moves = board.available_moves(player)
         if not moves:
             #this should never happen. Unlike chess there are no "illegal" moves 
-            return self.eval_func(board, depth, self.heuristics), None
+            return self.eval_func(board, depth, player, self.heuristics), None
         
         #sort moves by their predicted quality. usefull for better pruning
         moves.sort(key=lambda m: self._score_move(board, m, depth, tt_move), reverse=True)
